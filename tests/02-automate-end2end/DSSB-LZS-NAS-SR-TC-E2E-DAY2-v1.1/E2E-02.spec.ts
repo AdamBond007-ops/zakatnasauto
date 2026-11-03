@@ -137,7 +137,7 @@ test('E2E-02', async ({ page }) => {
     await aduan.uploadPengesahanPendapatan(TESTING_PDF, 'testing.pdf');
     await aduan.clickSelesai();
 
-    
+    await page.waitForTimeout(3000);
 
     await login.logout();
 });
