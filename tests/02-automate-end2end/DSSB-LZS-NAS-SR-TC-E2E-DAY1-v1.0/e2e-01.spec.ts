@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { join } from 'path';
 
+
 async function uploadFile(fileInput: import('@playwright/test').Locator): Promise<void> {
   await fileInput.setInputFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
 }
