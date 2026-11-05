@@ -702,5 +702,128 @@ export class AduanAction {
     await this.main.hantarButton.click();
     await this.page.waitForLoadState('load');
     await this.page.waitForTimeout(3000);
+  async pilihKakitanganLzs(value: 'Y' | 'T'): Promise<void> {
+    const optionLocator = this.page.locator(`input[name="hubungan_kakitangan_lzs"][value="${value}"]`);
+    await optionLocator.click();
+    await expect(optionLocator).toBeChecked();
+  }
+
+  async pilihPenolongAmil(value: 'Y' | 'T'): Promise<void> {
+    const optionLocator = this.page.locator(`input[name="hubungan_penolong_amil"][value="${value}"]`);
+    await optionLocator.click();
+    await expect(optionLocator).toBeChecked();
+  }
+
+   async drawSignature(): Promise<void> {
+     const canvas = this.page.locator('canvas').first();
+     await canvas.waitFor({ state: 'visible' });
+     await canvas.scrollIntoViewIfNeeded();
+     const box = await canvas.boundingBox();
+
+     if (!box) {
+       throw new Error('Canvas bounding box not found');
+     }
+    await this.page.mouse.move(box.x + 20, box.y + box.height / 2);
+    await this.page.mouse.down();
+    await this.page.mouse.move(box.x + box.width / 4, box.y + 10);
+    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height - 10);
+    await this.page.mouse.move(box.x + (box.width * 3) / 4, box.y + 20);
+    await this.page.mouse.move(box.x + box.width - 20, box.y + box.height / 2);
+    await this.page.mouse.up();
+  
+  }
+
+  //EOAD Adam buat
+
+  async pilihMasihBersekolah(value: '01' | '02'): Promise<void> {
+    const optionLocator = this.page.locator(`input[name="masih_bersekolah"][value="${value}"]`);
+    await optionLocator.click();
+    await expect(optionLocator).toBeChecked();
+  }
+
+  async pilihAdaKemahiran(value: 'Y' | 'T'): Promise<void> {
+    const optionLocator = this.page.locator(`input[name="ada_kemahiran"][value="${value}"]`);
+    await optionLocator.click();
+    await expect(optionLocator).toBeChecked();
+  }
+
+  async pilihAdaPinjaman(value: 'Y' | 'T'): Promise<void> {
+    const optionLocator = this.page.locator(`input[name="ada_pinjaman"][value="${value}"]`);
+    await optionLocator.click();
+    await expect(optionLocator).toBeChecked();
+  }
+
+  async pilihAdaAset(value: 'Y' | 'T'): Promise<void> {
+    const optionLocator = this.page.locator(`input[name="ada_aset"][value="${value}"]`);
+    await optionLocator.click();
+    await expect(optionLocator).toBeChecked();
+  }
+
+  async drawSignatureEOAD(): Promise<void> {
+    const canvas = this.page.locator('canvas').first();
+    await canvas.waitFor({ state: 'visible' });
+    await canvas.scrollIntoViewIfNeeded();
+    const box = await canvas.boundingBox();
+
+    if (!box) {
+      throw new Error('Canvas bounding box not found');
+    }
+
+    // Click and drag across the canvas to simulate a signature
+    await this.page.mouse.move(box.x + 20, box.y + box.height / 2);
+    await this.page.mouse.down();
+    await this.page.mouse.move(box.x + box.width / 4, box.y + 10);
+    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height - 10);
+    await this.page.mouse.move(box.x + (box.width * 3) / 4, box.y + 20);
+    await this.page.mouse.move(box.x + box.width - 20, box.y + box.height / 2);
+    await this.page.mouse.up();
+  }
+
+  async pilihSokongan(value: 'SOKONG' | 'BATAL'): Promise<void> {
+    const selectLocator = this.page.locator('select[name="keputusan"]');
+    const optionLabel = await selectLocator.locator(`option[value="${value}"]`).textContent();
+    if (!optionLabel) {
+      throw new Error(`No keputusan option found for value "${value}"`);
+    }
+
+    const selectTrigger = selectLocator.locator('..').locator('.select-trigger');
+    await selectTrigger.click();
+
+    const escapedLabel = optionLabel.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const option = this.page
+      .locator('span:visible')
+      .filter({ hasText: new RegExp(`^${escapedLabel}$`) })
+      .last();
+    await expect(option).toBeVisible();
+    await option.click();
+
+    await expect(selectLocator).toHaveValue(value);
+  }
+
+  async pilihKeputusan(value: 'LULUS' | 'PINDAAN'): Promise<void> {
+    const selectLocator = this.page.locator('select[name="keputusan"]');
+    const optionLabel = await selectLocator.locator(`option[value="${value}"]`).textContent();
+    if (!optionLabel) {
+      throw new Error(`No keputusan option found for value "${value}"`);
+    }
+
+    const selectTrigger = selectLocator.locator('..').locator('.select-trigger');
+    await selectTrigger.click();
+
+    const escapedLabel = optionLabel.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const option = this.page
+      .locator('span:visible')
+      .filter({ hasText: new RegExp(`^${escapedLabel}$`) })
+      .last();
+    await expect(option).toBeVisible();
+    await option.click();
+
+    await expect(selectLocator).toHaveValue(value);
+  }
+
+  async pilihMuflisDisenaraiHitam(value: 'Y' | 'T'): Promise<void> {
+    const optionLocator = this.page.locator(`input[name="muflis_disenarai_hitam"][value="${value}"]`);
+    await optionLocator.click();
+    await expect(optionLocator).toBeChecked();
   }
 }
