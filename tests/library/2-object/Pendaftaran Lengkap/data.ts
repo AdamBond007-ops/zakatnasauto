@@ -36,6 +36,6 @@ export function generatePhoneNumber(): string {
 
 export const STATUS_PEKERJAAN = {
     BEKERJA: "1",
-    TIDAK_BEKERJA: "0",
+    TIDAK_BEKERJA: "2",
   } as const;
   export type StatusPekerjaan = (typeof STATUS_PEKERJAAN)[keyof typeof STATUS_PEKERJAAN];

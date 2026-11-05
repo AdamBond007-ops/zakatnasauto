@@ -1,6 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
 import path from 'path';
-import fs from 'fs';
 import { faker } from '@faker-js/faker';
 import { LoginAction } from '@library/2-object/Login/action';
 import { CarianAsnafAction } from '@library/2-object/Carian Asnaf/action';
@@ -92,9 +91,6 @@ test('E2E-02', async ({ page }) => {
     await aduan.setConsent(true);
     await aduan.clickSimpan();
 
-    await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
     // ------------------------------------------------
     //        Step 2: Maklumat tambahan
     // ------------------------------------------------
@@ -113,31 +109,119 @@ test('E2E-02', async ({ page }) => {
     await aduan.selectTahapKesihatan('Sihat');
     await aduan.clickSeterusnya();
 
-    await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
     await aduan.selectMasihBelajar('02');
     await aduan.selectPendidikanTertinggi('Diploma');
     await aduan.selectAdaKemahiran('T');
     await aduan.clickSeterusnya();
 
-    await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
     await aduan.selectAdaPinjaman('T');
     await aduan.selectAdaAset('T');
     await aduan.clickSeterusnya();
 
-    await page.waitForLoadState('load');
-    await page.waitForTimeout(3000);
-
-    await aduan.selectStatusPekerjaan(STATUS_PEKERJAAN.BEKERJA);
-    await aduan.selectSektorPekerjaan('Swasta');
-    await aduan.fillPendapatanKasar('1500');
-    await aduan.uploadPengesahanPendapatan(TESTING_PDF, 'testing.pdf');
+    await aduan.selectStatusPekerjaan('0');
+    // await aduan.selectSektorPekerjaan('Swasta');
+    // await aduan.fillPendapatanKasar('300.00');
+    // await aduan.uploadPengesahanPendapatan(TESTING_PDF, 'testing.pdf');
     await aduan.clickSelesai();
 
     await page.waitForTimeout(3000);
 
-    await login.logout();
+    await aduan.clickTanggungan();
+    await page.waitForLoadState('load');
+
+    await aduan.clickTambahTanggungan();
+    await page.waitForLoadState('load');
+
+    // ------------------------------------------------
+    //        Tanggungan
+    // ------------------------------------------------
+    await aduan.fillNamaTanggungan(`A ${faker.person.firstName().toUpperCase()}`);
+    await aduan.selectJenisPengenalanTanggungan('MyKad / MyKid');
+    await aduan.fillNoPengenalanTanggungan(generateIC());
+    await aduan.selectHubunganTanggungan('Anak Lelaki');
+    await aduan.selectJantinaTanggungan('Lelaki');
+    await aduan.selectBangsaTanggungan('Melayu');
+    await aduan.clickSimpanTanggungan();
+    await page.waitForTimeout(3000);
+    await aduan.clickEditTanggungan();
+    await page.waitForTimeout(1000);
+
+    await aduan.uploadTanggunganDokumenId(TESTING_PDF, 'testing.pdf');
+    await aduan.selectTanggunganTempohUnit('Bulan');
+    await aduan.fillTanggunganTempohMenetap('5');
+    await aduan.selectTanggunganStatusPerkahwinan('Bujang');
+    await aduan.selectTanggunganMuallaf('T');
+    await aduan.selectTanggunganMuflis('T');
+    await aduan.selectTanggunganTahapKesihatan('Sihat');
+
+    await aduan.clickSeterusnya();
+
+    await aduan.selectTanggunganMasihBersekolah('02');
+    await aduan.selectTanggunganPendidikanTertinggi('Diploma');
+
+    await aduan.clickSeterusnya();
+
+    await aduan.selectTanggunganAdaPinjaman('T');
+    await aduan.selectTanggunganAdaAset('T');
+
+    await aduan.clickSeterusnya();
+
+    await aduan.selectTanggunganStatusPekerjaan(STATUS_PEKERJAAN.TIDAK_BEKERJA);
+
+    await aduan.clickSimpan();
+
+    // ------------------------------------------------
+    //        Permohonan Bantuan
+    // ------------------------------------------------
+
+    await aduan.clickBantuan();
+    await aduan.clickMohonBantuanBaru();
+
+    await aduan.selectAid('(HQ) BANTUAN KEPERLUAN HIDUP (FAKIR)');
+    await aduan.selectAidProduct('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.selectProductPackage('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.setEntitlementProduct('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.setCashCounter(true);
+    await aduan.fillPenyataanSebab('sda');
+
+    await aduan.clickEditEntitlement('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.fillKadarBantuan('20.00');
+    await aduan.clickSimpanBantuan();
+
+    await aduan.uploadDokumenSokongan(0, TESTING_PDF, 'testing.pdf');
+    await aduan.selectStatusDokumenSokongan(0, 'Lengkap');
+    await aduan.selectStatusDokumenSokongan(1, 'Tiada Keperluan');
+    await aduan.fillCatatanDokumenSokongan(0, 'catatan');
+
+    await aduan.fillNamaDokumenLzs(0, 'Dokumen LZS');
+    await aduan.uploadDokumenLzs(0, TESTING_PDF);
+    await aduan.fillCatatanDokumenLzs(0, 'catatan lzs');
+
+    await aduan.selectStatusSiasatan('Sokong');
+    await aduan.fillCatatanSiasatan('dsa');
+
+    await aduan.expectStatusDokumenSokongan('LENGKAP');
+    await aduan.clickSimpan();
+    await aduan.clickYaSimpan();
+    await aduan.clickOk();
+
+    await aduan.clickBantuan();
+    await aduan.selectKaedahSiasatan('Lapangan');
+    //await aduan.fillTarikhSiasatan('2026-11-05');   // optional, already today
+    await aduan.fillMasaSiasatan('10:30');
+    //await aduan.uploadGambarSiasatan(TESTING_IMG);
+    await aduan.fillLaporanSiasatan('Siasatan lapangan telah dijalankan');
+    await aduan.selectPengesahanLawatan('tandatangan');
+    await aduan.lukisTandatangan();
+    await aduan.clickSahkanLawatan();
+
+    await aduan.clickPengesahan();
+    await aduan.clickStepPengesahanAkhir();
+    await aduan.selectHubunganKakitanganLzs('T');
+    await aduan.selectHubunganPenolongAmil('T');
+    await aduan.lukisTandatanganPengesahanAkhir();
+    await aduan.expectTarikhPerakuan();
+    await aduan.fillCatatanSokongan('Catatan sokongan');
+    await aduan.clickSimpan();
+
 });
