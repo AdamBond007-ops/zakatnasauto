@@ -5,7 +5,6 @@ import { LoginAction } from '@library/2-object/Login/action';
 import { CarianAsnafAction } from '@library/2-object/Carian Asnaf/action';
 import { TIMEOUTS } from '../../library/1-data/config/timeout-config';
 import { AduanAction } from '@library/2-object/Pendaftaran Lengkap/action';
-import { STATUS_PEKERJAAN } from '@library/2-object/Pendaftaran Lengkap/data';
 async function uploadFile(fileInput: Locator): Promise<void> {
   await fileInput.setInputFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
 }
@@ -129,7 +128,7 @@ test('test', async ({ page }) => {
       await page.waitForLoadState('load');
       await page.waitForTimeout(3000);
   
-      await aduan.selectStatusPekerjaan(STATUS_PEKERJAAN.TIDAK_BEKERJA);
+      await aduan.selectStatusPekerjaan('0');
 
   await page.getByRole('button', { name: 'Teruskan Had Kifayah' }).click();
   await page.getByRole('row', { name: 'Dewasa Bekerja (18 Tahun ke Atas)' }).getByRole('spinbutton').click();
@@ -187,6 +186,7 @@ test('test', async ({ page }) => {
   await page.waitForTimeout(TIMEOUTS.SHORT);
   await page.getByRole('searchbox', { name: 'Cari...' }).click();
   await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
+  await page.waitForTimeout(TIMEOUTS.SHORT);
   await page.getByRole('button', { name: 'Lihat Sokongan' }).click();
   await page.getByRole('button', { name: 'Maklumat Pemohon' }).click();
  await uploadFile(page.locator('input[type="file"]').first());
