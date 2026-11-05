@@ -22,7 +22,6 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Cari' }).click();
   await page.getByRole('button', { name: 'Lihat Profil' }).first().click();
   await page.getByRole('button', { name: 'Kemaskini' }).click();
-  await page.getByRole('button', { name: 'Ya, Kemaskini' }).click();
   await page.waitForTimeout(3000);
   await page.getByText('Daftar / Kemaskini /').click();
   await page.getByText('Pendaftaran baharu atau').click();
