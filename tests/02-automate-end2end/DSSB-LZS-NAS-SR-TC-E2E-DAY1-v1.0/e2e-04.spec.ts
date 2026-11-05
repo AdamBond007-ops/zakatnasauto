@@ -10,6 +10,14 @@ async function uploadFile(fileInput: Locator): Promise<void> {
   await fileInput.setInputFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
 }
 
+async function uploadFileFromButton(button: Locator): Promise<void> {
+  const [fileChooser] = await Promise.all([
+    button.page().waitForEvent('filechooser'),
+    button.click(),
+  ]);
+  await fileChooser.setFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
+}
+
 function generateMalaysianIc(): string {
   const birthDate = faker.date.birthdate({ min: 19, max: 65, mode: 'age' });
   const datePart = `${String(birthDate.getFullYear()).slice(-2)}${String(birthDate.getMonth() + 1).padStart(2, '0')}${String(birthDate.getDate()).padStart(2, '0')}`;
@@ -78,7 +86,6 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Cari' }).click();
   await page.getByRole('button', { name: 'Isi Borang Permohonan' }).click();
   await page.getByRole('button', { name: 'Daftar tanpa Validasi' }).click();
-  await page.getByRole('button', { name: 'Pilih Fail' }).click();
   await uploadFile(page.locator('input[type="file"]').first());
   await page.getByRole('textbox', { name: 'Tempat Lahir' }).click();
   await page.getByRole('textbox', { name: 'Tempat Lahir' }).fill('PUCHONh');
@@ -116,7 +123,6 @@ test('test', async ({ page }) => {
   await page.getByLabel('Nama Bank', { exact: true }).getByText('AFFIN BANK BERHAD').click();
   await page.getByRole('textbox', { name: 'No. Akaun Bank*' }).click();
   await page.getByRole('textbox', { name: 'No. Akaun Bank*' }).fill(bankAccountNumber);
-  await page.getByRole('button', { name: 'Pilih Fail' }).click();
   await uploadFile(page.locator('input[type="file"]').first());
   await page.getByRole('button', { name: 'Seterusnya' }).click();
   
@@ -133,7 +139,6 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Seterusnya' }).click();
   await page.getByText('Daftar / Kemaskini /').click();
   await page.getByText('Memerlukan bantuan untuk').click();
-  await page.getByRole('button', { name: 'Pilih Fail' }).click();
   await uploadFile(page.locator('input[type="file"]').first());
   await page.getByRole('textbox', { name: 'Pernyataan Masalah*' }).click();
   await page.getByRole('textbox', { name: 'Pernyataan Masalah*' }).fill('macaalah');
@@ -154,9 +159,7 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Kadar Bantuan (RM)*' }).click();
   await page.getByRole('textbox', { name: 'Kadar Bantuan (RM)*' }).fill('100');
   await page.locator('button').filter({ hasText: /^Simpan$/ }).click();
-  await page.locator('div:nth-child(3) > .grid > div:nth-child(4) > .flex > button:nth-child(3)').click();
   await uploadFile(page.locator('input[type="file"]').nth(1));
-  await page.locator('.flex.flex-col > .flex > button:nth-child(2)').click();
   await uploadFile(page.locator('input[type="file"]').nth(2));
   await page.getByRole('textbox', { name: 'Nama/rujukan dokumen' }).click();
   await page.getByRole('textbox', { name: 'Nama/rujukan dokumen' }).fill('8282882');
@@ -186,7 +189,6 @@ test('test', async ({ page }) => {
   await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
   await page.getByRole('button', { name: 'Lihat Sokongan' }).click();
   await page.getByRole('button', { name: 'Maklumat Pemohon' }).click();
- await page.getByRole('button', { name: 'Pilih Fail' }).nth(1).click();
  await uploadFile(page.locator('input[type="file"]').first());
   await page.locator('#stepForm-1 div').filter({ hasText: /^Sila Pilih$/ }).click();
   await page.locator('span').filter({ hasText: 'Sihat' }).first().click();
@@ -194,7 +196,6 @@ test('test', async ({ page }) => {
   await aduan.pilihMasihBersekolah('02');
   await page.locator('#stepForm-2').getByText('Sila Pilih', { exact: true }).click();
   await page.locator('span').filter({ hasText: 'SPM' }).first().click();
-  await page.getByRole('button', { name: 'Pilih Fail' }).click();
   await uploadFile(page.locator('input[type="file"]').first());
   await aduan.pilihAdaKemahiran('Y');
   await page.getByRole('checkbox', { name: 'Nelayan' }).check();
@@ -218,7 +219,6 @@ test('test', async ({ page }) => {
   await page.locator('#kaedah-siasatan-form div').filter({ hasText: /^Sila Pilih$/ }).click();
   await page.locator('span').filter({ hasText: 'Lapangan' }).first().click();
   await page.getByRole('textbox', { name: 'Masa Siasatan*' }).fill('10:40');
-  await page.getByRole('button', { name: 'Pilih Fail' }).click();
   await uploadFile(page.locator('input[type="file"]').first());
   await page.getByRole('textbox', { name: 'Laporan Siasatan*' }).click();
   await page.getByRole('textbox', { name: 'Laporan Siasatan*' }).fill('kkjjk');
@@ -227,11 +227,7 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Sahkan Lawatan' }).click();
   await page.waitForTimeout(TIMEOUTS.SHORT);
   await page.getByRole('button', { name: 'Pengesahan' }).click();
-  const [pengesahanFileChooser] = await Promise.all([
-    page.waitForEvent('filechooser'),
-    page.getByRole('button', { name: 'Pilih Fail' }).click(),
-  ]);
-  await pengesahanFileChooser.setFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
+  await uploadFileFromButton(page.getByRole('button', { name: 'Pilih Fail', exact: true }));
   await aduan.pilihSokongan('SOKONG');
   await page.getByRole('textbox', { name: 'Catatan*' }).click();
   await page.getByRole('textbox', { name: 'Catatan*' }).fill('sokong');
