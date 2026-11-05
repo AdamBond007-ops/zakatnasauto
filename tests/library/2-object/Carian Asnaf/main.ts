@@ -22,7 +22,7 @@ export class CarianAsnafMain {
     return this.page.getByRole("textbox", { name: "Nama" });
   }
   get cariButton(): Locator {
-    return this.page.getByRole("button", { name: "Cari" });
+    return this.page.getByRole("button", { name: "Cari", exact: true });
   }
   get isiBorangButton(): Locator {
     return this.page.getByRole("button", { name: "Isi Borang Permohonan" });
