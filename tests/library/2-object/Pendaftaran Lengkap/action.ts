@@ -648,7 +648,7 @@ export class AduanAction {
     await this.main.butiranAkaunButton.click();
   }
 
-  private async drawSignature(canvas: Locator): Promise<void> {
+  private async drawSignature1(canvas: Locator): Promise<void> {
     await expect(canvas).toBeVisible();
     await canvas.scrollIntoViewIfNeeded();
 
@@ -679,7 +679,7 @@ export class AduanAction {
 
   /** Signature pad in the form (not the modal one). Same stroke approach as lukisTandatangan. */
   async lukisTandatanganPengesahanAkhir(): Promise<void> {
-    await this.drawSignature(this.main.pengesahanAkhirCanvas);
+    await this.drawSignature1(this.main.pengesahanAkhirCanvas);
   }
 
   async clickPadamTandatanganPengesahanAkhir(): Promise<void> {
@@ -702,6 +702,8 @@ export class AduanAction {
     await this.main.hantarButton.click();
     await this.page.waitForLoadState('load');
     await this.page.waitForTimeout(3000);
+  }
+
   async pilihKakitanganLzs(value: 'Y' | 'T'): Promise<void> {
     const optionLocator = this.page.locator(`input[name="hubungan_kakitangan_lzs"][value="${value}"]`);
     await optionLocator.click();
