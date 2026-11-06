@@ -8,6 +8,11 @@ export class KelulusanAction {
         this.main = new KelulusanMain(page);
     }
 
+    async goToKelulusan(): Promise<void> {
+        await this.main.menuKelulusan.click();
+        await expect(this.main.searchInput).toBeVisible();
+    }
+
     private async selectFromDropdown(container: Locator, optionText: string): Promise<void> {
         const trigger = container.locator(".select-trigger");
 
@@ -96,6 +101,15 @@ export class KelulusanAction {
     async clickLihatTindakanBantuan(noBantuan: string): Promise<void> {
         const button = this.main.bantuanLihatTindakanButton(noBantuan);
         await expect(button).toBeVisible();
+        await button.click();
+    }
+
+    async clickLihatTindakanBantuanByNama(nama: string): Promise<void> {
+        const row = this.main.bantuanRowByNama(nama);
+        await expect(row).toHaveCount(1);
+        const button = row.getByTitle("Lihat / Tindakan");
+        await expect(button).toBeVisible();
+        await button.scrollIntoViewIfNeeded();
         await button.click();
     }
 

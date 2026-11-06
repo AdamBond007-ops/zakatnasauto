@@ -46,7 +46,7 @@ await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
   await page.getByRole('textbox', { name: 'Bilangan Peserta*' }).fill('20');
   await page.getByRole('textbox', { name: 'Jumlah Hari Program*' }).click();
   await page.getByRole('textbox', { name: 'Jumlah Hari Program*' }).fill('1');
-  await page.getByRole('textbox', { name: 'Tarikh Mula*' }).fill('2026-11-06');
+  await page.getByRole('textbox', { name: 'Tarikh Mula*' }).fill('2026-11-08');
   await page.locator('input[type="time"]').nth(0).fill('14:16');
   await page.locator('input[type="time"]').nth(1).fill('18:19');
   await page.getByRole('textbox', { name: 'Catatan*' }).click();

@@ -3,6 +3,10 @@ import { Locator, Page } from "@playwright/test";
 export class KelulusanMain {
     constructor(private readonly page: Page) { }
 
+    get menuKelulusan(): Locator {
+        return this.page.locator('a[data-menu-path="/profiling/asnaf/kelulusan"]');
+    }
+
     // --- Tabs (button name also contains the count, e.g. "Menunggu Kelulusan 14") ---
     get tabMenungguKelulusan(): Locator {
         return this.page.getByRole("button", { name: /^Menunggu Kelulusan/ });
@@ -71,6 +75,15 @@ export class KelulusanMain {
     }
     bantuanLihatTindakanButton(noBantuan: string): Locator {
         return this.bantuanRow(noBantuan).getByTitle("Lihat / Tindakan");
+    }
+    bantuanRowByNama(nama: string): Locator {
+        const escapedNama = nama.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return this.page.locator("tbody tr:visible").filter({
+            has: this.page.getByText(new RegExp(`^${escapedNama}$`, "i")),
+        });
+    }
+    bantuanLihatTindakanButtonByNama(nama: string): Locator {
+        return this.bantuanRowByNama(nama).getByTitle("Lihat / Tindakan");
     }
 
     // --- Sidebar: Keputusan Kelulusan (found by its hidden <select name="keputusan">) ---

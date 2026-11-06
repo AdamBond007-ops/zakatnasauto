@@ -520,6 +520,13 @@ export class AduanAction {
     await this.page.waitForTimeout(1000);
   }
 
+  async yaHantar(): Promise<void> {
+    await expect(this.main.swalYaHantarButton).toBeVisible();
+    await this.main.swalYaHantarButton.click();
+    await this.page.waitForLoadState('load');
+    await this.page.waitForTimeout(1000);
+  }
+
   /** Success popup: closes it and waits for it to disappear. */
   async clickOk(): Promise<void> {
     await expect(this.main.swalOkButton).toBeVisible();
@@ -527,6 +534,12 @@ export class AduanAction {
     await this.page.waitForLoadState('load');
     await this.page.waitForTimeout(1000);
     await expect(this.main.swalPopup).toBeHidden();
+  }
+
+  async clickTeruskanChoice(choice: "Ya, Teruskan" | "Tidak"): Promise<void> {
+    const button = this.main.teruskanChoiceButton(choice);
+    await expect(button).toBeVisible();
+    await button.click();
   }
 
   // ------------------------------------------------

@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 test('test', async ({ page }) => {
 
     //EKP kemaskini organisasi
+  await page.goto('https://stg.nas-internal.com/login');
   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
   await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('abdwalid');
   await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
@@ -11,14 +12,11 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Organisasi' }).click();
   await page.locator('a').filter({ hasText: /^Carian$/ }).click();
   await page.getByText('Sila Pilih').first().click();
-  await page.getByRole('option', { name: 'Agensi' }).click();
-  await page.getByRole('textbox', { name: 'Nama Organisasi' }).click();
-  await page.getByRole('button', { name: 'Cari' }).click();
+  await page.getByRole('option', { name: 'Masjid' }).click();
   await page.getByRole('textbox', { name: 'Nama Organisasi' }).click();
   await page.getByRole('textbox', { name: 'Nama Organisasi' }).fill('masjid');
   await page.getByRole('button', { name: 'Cari' }).click();
-  await page.locator('#input_40 span').filter({ hasText: 'Agensi' }).click();
-  await page.locator('span').filter({ hasText: 'Masjid' }).nth(2).click();
+ 
   await page.getByRole('button', { name: 'Cari' }).click();
   await page.waitForTimeout(3000);
   await page.locator('th:nth-child(7) > .flex.min-w-0.items-center.gap-2.text-left.justify-between > .flex > .inline-flex > .iconify').click();

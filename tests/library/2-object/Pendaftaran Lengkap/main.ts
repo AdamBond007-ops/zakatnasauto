@@ -433,8 +433,14 @@ export class PendaftaranLengkapMain {
     get swalYaSimpanButton(): Locator {
         return this.swalPopup.getByRole("button", { name: "Ya, Simpan", exact: true });
     }
+    get swalYaHantarButton(): Locator {
+        return this.swalPopup.getByRole("button", { name: "Ya, Hantar", exact: true });
+    }
     get swalOkButton(): Locator {
         return this.swalPopup.getByRole("button", { name: "OK", exact: true });
+    }
+    teruskanChoiceButton(choice: "Ya, Teruskan" | "Tidak"): Locator {
+        return this.page.getByRole("button", { name: choice, exact: true });
     }
 
     // ------------------------------------------------

@@ -6,6 +6,8 @@ import { CarianAsnafAction } from '@library/2-object/Carian Asnaf/action';
 import { TIMEOUTS } from '../../library/1-data/config/timeout-config';
 import { AduanAction } from '@library/2-object/Pendaftaran Lengkap/action';
 import { STATUS_PEKERJAAN } from '@library/2-object/Pendaftaran Lengkap/data';
+import { KelulusanAction } from '@library/2-object/Kelulusan/action';
+
 
 
 function generateIC() {
@@ -84,7 +86,7 @@ test('E2E-02', async ({ page }) => {
     await aduan.selectStatusPerkahwinan('Bujang');
     await aduan.fillAlamat1('RUMAH');
     await aduan.fillAlamat2('JALAN');
-    await aduan.fillPoskod('47500');
+    await aduan.fillPoskod('46200');
     await aduan.selectKariah('MASJID ABU BAKAR AS-SIDDIQ SUBANG JAYA');
     await aduan.selectTahapKeperluan('Kecemasan', 'Tiada bekalan makanan mencukupi');
     await aduan.fillPernyataanMasalah('masalah');
@@ -222,6 +224,38 @@ test('E2E-02', async ({ page }) => {
     await aduan.lukisTandatanganPengesahanAkhir();
     await aduan.expectTarikhPerakuan();
     await aduan.fillCatatanSokongan('Catatan sokongan');
-    await aduan.clickSimpan();
+    await aduan.clickHantar();
+    await aduan.yaHantar();
+    await aduan.clickOk();
+    await aduan.clickTeruskanChoice('Tidak');
+    await page.waitForTimeout(3000);
+    await login.logout();
 
+    // ------------------------------------------------
+    //        KOAD LOGIN
+    // ------------------------------------------------
+    await login.goto();
+    await login.fillIdPengguna('m.sharil');
+    await login.fillKataLaluan('Password123@');
+    await login.clickLogMasuk();
+    await page.waitForLoadState('load');
+    const kelulusan = new KelulusanAction(page);
+    await kelulusan.goToKelulusan();
+    await kelulusan.cariByIc(data.ic);
+    await kelulusan.clickLihatKelulusan(data.ic);
+    await kelulusan.clickDetailTab('Bantuan');
+    await kelulusan.clickLihatTindakanBantuanByNama(data.name);
+    await kelulusan.selectStatusKelulusan('Lulus');
+    await kelulusan.fillCatatanBantuan('Permohonan diluluskan.');
+    await aduan.clickSimpan();
+    await kelulusan.openKeputusanKelulusan();
+    await kelulusan.selectKeputusan('Lulus');
+    await kelulusan.fillCatatanKelulusan('lulus');
+    await aduan.clickHantar();
+    await aduan.yaHantar();
+    await page.waitForTimeout(3000);
+    await aduan.clickOk();
+    await login.logout();
+
+    
 });
