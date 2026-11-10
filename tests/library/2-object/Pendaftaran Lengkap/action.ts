@@ -12,9 +12,12 @@ export class AduanAction {
   /** Generic FormKit selectSearch: open, pick option, verify it shows. */
   private async selectFromDropdown(container: Locator, optionText: string): Promise<void> {
     const trigger = container.locator(".select-trigger");
+    const searchInput = container.locator(".formkit-select-search");
 
-    // Daerah / Kariah stay disabled until their parent has a value
-    await expect(container.locator(".formkit-select-search")).not.toHaveClass(/is-disabled/);
+    await expect(trigger).toBeVisible();
+    if (await searchInput.count()) {
+      await expect(searchInput).not.toHaveClass(/is-disabled/);
+    }
     await trigger.scrollIntoViewIfNeeded();
     await trigger.click();
 
@@ -86,7 +89,9 @@ export class AduanAction {
   }
 
   async setConsent(checked = true): Promise<void> {
-    await this.main.consentCheckbox.setChecked(checked);
+    if (await this.main.consentCheckbox.isChecked() !== checked) {
+      await this.main.consentLabel.click();
+    }
     await expect(this.main.consentCheckbox).toBeChecked({ checked });
   }
 
@@ -500,6 +505,7 @@ export class AduanAction {
   async clickSimpanBantuan(): Promise<void> {
     await expect(this.main.simpanBantuanButton).toBeEnabled();
     await this.main.simpanBantuanButton.click();
+    await expect(this.main.kadarBantuanInput).toBeHidden();
   }
 
   async clickKembali(): Promise<void> {
@@ -510,6 +516,10 @@ export class AduanAction {
   async fillKadarBantuan(value: string): Promise<void> {
     await this.main.kadarBantuanInput.fill(value);
     await expect(this.main.kadarBantuanInput).toHaveValue(value);
+  }
+
+  async selectKategoriPenerima(option: string): Promise<void> {
+    await this.selectFromDropdown(this.main.kategoriPenerimaContainer, option);
   }
 
   /** Confirmation popup shown after clicking Simpan. */

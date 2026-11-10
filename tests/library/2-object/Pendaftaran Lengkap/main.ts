@@ -1,5 +1,4 @@
 import { Locator, Page } from "@playwright/test";
-import { LABELS } from "@library/2-object/Pendaftaran Lengkap/data";
 
 /** Locators / getters only. No clicks, fills or assertions here. */
 export class PendaftaranLengkapMain {
@@ -75,7 +74,10 @@ export class PendaftaranLengkapMain {
 
     // --- Consent + submit ---
     get consentCheckbox(): Locator {
-        return this.page.getByRole("checkbox", { name: LABELS.consent });
+        return this.page.locator('input[type="checkbox"][name="consent"]');
+    }
+    get consentLabel(): Locator {
+        return this.page.locator('label:has(input[type="checkbox"][name="consent"])');
     }
     get simpanButton(): Locator {
         return this.page.getByRole("button", { name: "Simpan", exact: true }).first();
@@ -317,7 +319,7 @@ export class PendaftaranLengkapMain {
         return this.selectSearchByLabel(/^Aid Product\*$/);
     }
     get productPackageContainer(): Locator {
-        return this.selectSearchByLabel(/^Product Package\*$/);
+        return this.selectSearchByLabel(/^Product Package\*?$/);
     }
     /** Visible label that the app listens to (the real input is sr-only). */
     entitlementLabel(name: string): Locator {
@@ -388,7 +390,7 @@ export class PendaftaranLengkapMain {
         return this.selectSearchByLabel(/^Status Siasatan\*$/);
     }
     get catatanSiasatanInput(): Locator {
-        return this.card("Keputusan Siasatan").getByRole("textbox", { name: "Catatan" });
+        return this.page.locator('textarea[name="textarea_97"]');
     }
 
     // --- Senarai Bantuan ---
@@ -425,7 +427,12 @@ export class PendaftaranLengkapMain {
     get kadarBantuanInput(): Locator {
         return this.page.getByRole("textbox", { name: "Kadar Bantuan (RM)" });
     }
-
+    get kategoriPenerimaContainer(): Locator {
+        return this.page
+            .locator(".modal.modal-top")
+            .locator('[data-type="selectSearch"]')
+            .filter({ has: this.page.locator("label", { hasText: /^Kategori Penerima\*?$/ }) });
+    }
     // --- SweetAlert2 popup buttons ---
     get swalPopup(): Locator {
         return this.page.locator(".swal2-popup");
@@ -538,7 +545,7 @@ export class PendaftaranLengkapMain {
         return this.pengesahanAkhirForm.locator('input[name="tarikh_perakuan"]');
     }
     get catatanSokonganInput(): Locator {
-        return this.page.getByPlaceholder("Masukkan catatan sokongan...");
+        return this.page.locator('textarea[name="catatan"]');
     }
     get hantarButton(): Locator {
         return this.page.getByRole("button", { name: "Hantar", exact: true });
