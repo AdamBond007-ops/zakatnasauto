@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-const { google } = require('googleapis'); // npm install googleapis
+
 
 async function selectSecurityQuestion(page: Page, questionName: string, value: string) {
   const dropdown = page.locator(`select[name="${questionName}"]`);

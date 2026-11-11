@@ -99,6 +99,14 @@ export class AduanAction {
     await this.main.hantarButton.click();
   }
 
+  async clickDaftarAkaun(): Promise<void> {
+    const daftarAkaunButton = this.page.locator(
+      'button:has-text("Daftar Akaun"), a:has-text("Daftar Akaun")'
+    );
+    await daftarAkaunButton.click();
+  }
+
+
   private async fillContactDetails(
     details: AduanContactDetails,
     namaPenuhInput: Locator,
@@ -134,4 +142,6 @@ export class AduanAction {
     await expect(select).toHaveValue(optionValue);
     await expect(trigger).toContainText(actualLabel);
   }
+
+  
 }
