@@ -1,3 +1,4 @@
+import { basename } from "node:path";
 import { expect, Locator, Page } from "@playwright/test";
 import { PendaftaranLengkapMain } from "@library/2-object/Pendaftaran Lengkap/main";
 import { StatusPekerjaan } from "@library/2-object/Pendaftaran Lengkap/data";
@@ -161,9 +162,18 @@ export class AduanAction {
     await this.selectFromDropdown(this.main.namaBankContainer, option);
   }
 
+  async selectNamaBankTanggungan(option: string): Promise<void> {
+    await this.selectFromDropdown(this.main.namaBankTanggunganContainer, option);
+  }
+
   async fillNoAkaunBank(value: string): Promise<void> {
     await this.main.noAkaunBankInput.fill(value);
     await expect(this.main.noAkaunBankInput).toHaveValue(value);
+  }
+
+  async fillNoAkaunBankTanggungan(value: string): Promise<void> {
+    await this.main.noAkaunBankTanggunganInput.fill(value);
+    await expect(this.main.noAkaunBankTanggunganInput).toHaveValue(value);
   }
 
   /** Not in the codegen. The page shows "No. akaun bank belum disahkan" until this is clicked. */
@@ -175,6 +185,13 @@ export class AduanAction {
     await this.main.penyataBankFileInput.setInputFiles(filePath);
     await expect(this.main.penyataBankUpload.getByText(fileName)).toBeVisible();
     await expect(this.main.penyataBankUpload.getByText("Sedia")).toBeVisible();
+  }
+
+  async uploadPenyataBankTanggungan(filePath: string, fileName: string): Promise<void> {
+    await expect(this.main.penyataBankTanggunganUpload).toBeVisible();
+    await this.main.penyataBankTanggunganFileInput.setInputFiles(filePath);
+    await expect(this.main.penyataBankTanggunganUpload.getByText(fileName)).toBeVisible();
+    await expect(this.main.penyataBankTanggunganUpload.getByText("Sedia")).toBeVisible();
   }
 
   async selectTahapKesihatan(option: string): Promise<void> {
@@ -265,6 +282,16 @@ export class AduanAction {
   async fillNoPengenalanTanggungan(value: string): Promise<void> {
     await this.main.tanggunganNoPengenalanInput.fill(value);
     await expect(this.main.tanggunganNoPengenalanInput).toHaveValue(value);
+  }
+
+  async fillNoTelefonTanggungan(value: string): Promise<void> {
+    await this.main.tanggunganNoTelefonInput.fill(value);
+    await expect(this.main.tanggunganNoTelefonInput).toHaveValue(value);
+  }
+
+  async fillEmelTanggungan(value: string): Promise<void> {
+    await this.main.tanggunganEmelInput.fill(value);
+    await expect(this.main.tanggunganEmelInput).toHaveValue(value);
   }
 
   /** Date input: format is YYYY-MM-DD. Disabled until Jenis Pengenalan is chosen. */
@@ -851,4 +878,123 @@ export class AduanAction {
     await optionLocator.click();
     await expect(optionLocator).toBeChecked();
   }
+
+  //---------
+  //  Aduan
+  //---------
+
+  async clickSenaraiAduan(): Promise<void> {
+    await this.main.senaraiAduanButton.click();
+  }
+
+  async clickLihatAduan(): Promise<void> {
+    await this.main.lihatAduanButton.click();
+}
+
+async clickTerimaTugas(): Promise<void> {
+  await this.main.terimaTugasButton.click();
+}
+
+async clickYaTerima(): Promise<void> {
+  await this.main.yaTerimaButton.click();
+}
+
+async clickBatal(): Promise<void> {
+  await this.main.batalButton.click();
+}
+
+async selectTahapPendidikanDiploma(): Promise<void> {
+  await this.selectFromDropdown(this.main.tahapPendidikanContainer, "Diploma");
+}
+
+async selectKategoriSekolahIPTA(): Promise<void> {
+  await this.selectFromDropdown(this.main.kategoriSekolahContainer, "IPTA");
+  await expect(this.main.kategoriSekolahDropdown).toHaveValue("13");
+}
+
+  private async selectNativeOption(dropdown: Locator, labelOrValue: string): Promise<void> {
+    const options = await dropdown.locator("option").evaluateAll((elements) =>
+      elements.map((element) => {
+        const option = element as HTMLOptionElement;
+        return { label: option.textContent?.trim() ?? "", value: option.value };
+      }),
+    );
+    const option = options.find((item) => item.label === labelOrValue)
+      ?? options.find((item) => item.value === labelOrValue);
+
+    if (!option) {
+      throw new Error(`Option "${labelOrValue}" not found in dropdown`);
+    }
+
+    const trigger = dropdown.locator("xpath=..").locator(".select-trigger");
+    await expect(trigger).toBeVisible();
+    await trigger.scrollIntoViewIfNeeded();
+    await trigger.click();
+    await this.main.selectSearchOption(option.label).first().click({ timeout: 5_000 });
+    await expect(dropdown).toHaveValue(option.value);
+    await expect(trigger).toContainText(option.label);
+  }
+
+/**
+ * Fills study start and end dates with a 3-year gap (e.g., 2024-01-01 to 2027-01-01)
+ */
+async fillStudyDates(startDate: string = "2024-01-01", endDate: string = "2027-01-01"): Promise<void> {
+  await this.main.tarikhMulaInput.fill(startDate);
+  await this.main.tarikhTamatInput.fill(endDate);
+}
+
+/**
+ * Selects Tahun Pengajian (Default: "13" for Tahun 1)
+ */
+async selectTahunPengajian(value: string = "Tahun 1"): Promise<void> {
+  await this.selectNativeOption(this.main.tahunPengajianDropdown, value);
+}
+
+/**
+ * Selects Nama Sekolah / Institusi (Default: "E37F39DA-4E8E-E411-80DB-005056951C10" for UTM)
+ */
+async selectNamaSekolahUTM(value: string = "UTM-Universiti Teknologi Malaysia"): Promise<void> {
+  await this.selectNativeOption(this.main.namaSekolahDropdown, value);
+}
+
+async uploadSuratTawaran(filePath: string): Promise<void> {
+  const fileName = basename(filePath);
+  await expect(this.main.suratTawaranFileInput).toHaveCount(1);
+  await this.main.suratTawaranFileInput.setInputFiles(filePath);
+  await expect(this.main.suratTawaranValue).not.toHaveValue("[]", { timeout: 30_000 });
+  await expect(this.main.suratTawaranUpload.getByText(fileName, { exact: true })).toBeVisible();
+  
+}
+
+/**
+ * Selects Pembiayaan Pengajian (Default: "4" for Tiada)
+ */
+async selectPembiayaanTiada(value: string = "Tiada"): Promise<void> {
+  await this.selectNativeOption(this.main.pembiayaanDropdown, value);
+}
+
+/**
+ * Fills the Catatan field
+ */
+async fillCatatan(notes: string = "masalah"): Promise<void> {
+  await this.main.catatanTextarea.fill(notes);
+}
+
+/**
+ * Selects "Tidak" for hostel/rental accommodation residency question
+ */
+async selectTinggalAsramaTidak(): Promise<void> {
+  await this.main.tinggalAsramaTidakRadio.check();
+}
+
+/**
+ * Selects "Tidak" for whether the dependent has skills
+ */
+async selectAdaKemahiranTidak(): Promise<void> {
+  await this.main.adaKemahiranTidakRadio.check();
+}
+
+
+
+
 }

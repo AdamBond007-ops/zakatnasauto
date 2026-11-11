@@ -1,7 +1,24 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { faker } from "@faker-js/faker";
 import path from "path";
 import { AduanAction, type AduanContactDetails, type AduanIndividuDetails } from "@library/2-object/aduan/action";
+
+async function selectSecurityQuestion(page: Page, questionName: string, value: string) {
+  const select = page.locator(`select[name="${questionName}"]`);
+  const container = page.locator('[data-type="selectSearch"]').filter({ has: select });
+  const option = select.locator(`option[value="${value}"]`);
+  await expect(option).toHaveCount(1);
+  const optionLabel = (await option.textContent())?.trim();
+  if (!optionLabel) {
+    throw new Error(`Security question option "${value}" was not found.`);
+  }
+
+  const trigger = container.locator(".select-trigger");
+  await trigger.click();
+  const listbox = page.getByRole("listbox").filter({ visible: true }).last();
+  await listbox.getByRole("option", { name: optionLabel, exact: true }).click();
+  await expect(select).toHaveValue(value);
+}
 
 const ADUAN_URL = "https://stg.nas-internal.com/public/daftar-aduan";
 const TESTING_PDF = path.resolve(__dirname, "../../library/1-data/files/testing.pdf");
@@ -25,7 +42,7 @@ function generateEmail(): string {
   return `shafiyadam83+${randomWord}${randomNumber}@gmail.com`;
 }
 
-function createContactDetails(namaPenuh: string): AduanContactDetails {
+function createContactDetails(namaPenuh: string): AduanContactDetails & { emel: string } {
   return {
     namaPenuh,
     jenisPengenalan: "MyKad / MyKid",
@@ -63,5 +80,36 @@ test("E2E-20 - Daftar aduan sebagai wakil", async ({ page }) => {
   await aduan.setConsent(true);
   await aduan.clickHantar();
 
-  await page.waitForTimeout(10000);
+  await aduan.clickDaftarAkaun();
+
+  await page.waitForTimeout(3000);
+
+  const password = 'Password123@';
+
+  await page.locator('input[name="fullName"]').fill(pengadu.namaPenuh);
+  await page.locator('input[name="no_pengenalan"]').fill(pengadu.noPengenalan);
+  await page.locator('input[name="phoneNumber"]').fill(pengadu.noTelefon);
+  await page.locator('input[name="email"]').fill(pengadu.emel);
+  await page.locator('input[name="confirmEmail"]').fill(pengadu.emel);
+  await page.locator('input[name="password"]').fill(password);
+  await page.locator('input[name="confirmPassword"]').fill(password);
+
+  // 4. Fill Security Questions
+  await selectSecurityQuestion(page, 'securityQuestion1', 'SOALAN_01');
+  await page.locator('input[name="securityAnswer1"]').fill('Kucing');
+
+  await selectSecurityQuestion(page, 'securityQuestion2', 'SOALAN_02');
+  await page.locator('input[name="securityAnswer2"]').fill('Sekolah Kebangsaan Utama');
+
+  await selectSecurityQuestion(page, 'securityQuestion3', 'SOALAN_03');
+  await page.locator('input[name="securityAnswer3"]').fill('Kuala Lumpur');
+
+  // 5. Click PDPA consent checkbox
+  await page.locator('#pdpa-consent').check();
+
+  // 6. Submit the form
+  await page.locator('button[type="submit"]').click();
+  await page.getByRole('button', { name: 'OK', exact: true }).click();
+
+
 });

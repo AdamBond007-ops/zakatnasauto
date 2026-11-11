@@ -2,8 +2,14 @@ import { test, expect, type Page } from '@playwright/test';
 
 
 async function selectSecurityQuestion(page: Page, questionName: string, value: string) {
-  const dropdown = page.locator(`select[name="${questionName}"]`);
-  await dropdown.selectOption({ label: value });
+  const select = page.locator(`select[name="${questionName}"]`);
+  const container = page.locator('[data-type="selectSearch"]').filter({ has: select });
+  const option = select.locator(`option[value="${value}"]`);
+  await expect(option).toHaveCount(1);
+  const optionLabel = (await option.textContent())?.trim();
+  if (!optionLabel) {
+    throw new Error(`Security question option "${value}" was not found.`);
+  }
 }
 
 test('Register account and verify via Gmail API', async ({ page }: { page: Page }) => {
@@ -15,7 +21,7 @@ test('Register account and verify via Gmail API', async ({ page }: { page: Page 
     { length: 6 },
     () => letters[Math.floor(Math.random() * letters.length)]
   ).join('');
-  const fullName = `Shafiy Adam ${randomLetters}`;
+  const fullName = `ENDTEND TEST ${randomLetters}`;
   const email = `shafiyadam83+${randomLetters}@gmail.com`;
   const password = 'Password123@';
   

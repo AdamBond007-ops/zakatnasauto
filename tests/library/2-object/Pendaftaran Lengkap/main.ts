@@ -122,6 +122,9 @@ export class PendaftaranLengkapMain {
     get namaBankContainer(): Locator {
         return this.selectSearchContainer("bank0NamaBank");
     }
+    get namaBankTanggunganContainer(): Locator {
+        return this.selectSearchContainer("bankTanggungan0NamaBank");
+    }
     get tahapKesihatanContainer(): Locator {
         return this.selectSearchContainer("tahap_kesihatan").first();
     }
@@ -141,6 +144,9 @@ export class PendaftaranLengkapMain {
     get noAkaunBankInput(): Locator {
         return this.page.locator('input[name="bank0NoAkaun"]');
     }
+    get noAkaunBankTanggunganInput(): Locator {
+        return this.page.locator('input[name="bankTanggungan0NoAkaun"]');
+    }
     get semakAkaunButton(): Locator {
         return this.page.getByRole("button", { name: "Semak" });
     }
@@ -153,6 +159,16 @@ export class PendaftaranLengkapMain {
     }
     get penyataBankFileInput(): Locator {
         return this.penyataBankUpload.locator('input[type="file"]').first();
+    }
+    get penyataBankTanggunganUpload(): Locator {
+        return this.page
+            .locator(".custom-file-upload")
+            .filter({
+                has: this.page.locator('input[name^="dokumen_penyata_bank_tanggungan_"]'),
+            });
+    }
+    get penyataBankTanggunganFileInput(): Locator {
+        return this.penyataBankTanggunganUpload.locator('input[type="file"]').first();
     }
 
     get seterusnyaButton(): Locator {
@@ -230,6 +246,12 @@ export class PendaftaranLengkapMain {
     }
     get tanggunganNoPengenalanInput(): Locator {
         return this.tanggunganForm.locator('input[data-field="no_pengenalan"]');
+    }
+    get tanggunganNoTelefonInput(): Locator {
+        return this.page.locator('input[name="no_telefon_bimbit_tanggungan"]');
+    }
+    get tanggunganEmelInput(): Locator {
+        return this.page.locator('input[name="emel_tanggungan"]');
     }
     get tanggunganTarikhLahirInput(): Locator {
         return this.tanggunganForm.locator('input[data-field="tarikh_lahir"]');
@@ -390,7 +412,9 @@ export class PendaftaranLengkapMain {
         return this.selectSearchByLabel(/^Status Siasatan\*$/);
     }
     get catatanSiasatanInput(): Locator {
-        return this.page.locator('textarea[name="textarea_97"]');
+        return this.statusSiasatanContainer
+            .locator('xpath=ancestor::div[contains(@class, "card-body")][1]')
+            .locator('textarea[name="textarea_97"], textarea[name="catatan"]');
     }
 
     // --- Senarai Bantuan ---
@@ -550,4 +574,128 @@ export class PendaftaranLengkapMain {
     get hantarButton(): Locator {
         return this.page.getByRole("button", { name: "Hantar", exact: true });
     }
+
+    // ------------------------------------------------
+    //        Locator Aduan
+    // ------------------------------------------------
+
+
+    get senaraiAduanButton(): Locator {
+        return this.page.getByText("Senarai Aduan", { exact: true });
+    }
+
+    get lihatAduanButton(): Locator {
+        return this.page.locator('button:has(.i-material-symbols\\:document-search-outline-rounded)');
+    }
+    
+
+    get terimaTugasButton(): Locator {
+  return this.page.getByRole("button", { name: "Terima Tugas", exact: true });
+}
+
+get yaTerimaButton(): Locator {
+  return this.page.locator('button.swal2-confirm', { hasText: 'Ya, Terima' });
+}
+
+get batalButton(): Locator {
+  return this.page.locator('button.swal2-cancel', { hasText: 'Batal' });
+}
+
+get tahapPendidikanDropdown(): Locator {
+  return this.page.locator('select[name="tahap_pendidikan_tanggungan"]');
+}
+
+get tahapPendidikanContainer(): Locator {
+  return this.selectSearchContainer("tahap_pendidikan_tanggungan");
+}
+
+get tahapPendidikanTrigger(): Locator {
+  return this.tahapPendidikanDropdown.locator('xpath=..').locator('.select-trigger');
+}
+
+get kategoriSekolahDropdown(): Locator {
+  return this.page.locator('select[name="eduTanggungan0KategoriSekolah"]');
+}
+
+get kategoriSekolahContainer(): Locator {
+  return this.selectSearchContainer("eduTanggungan0KategoriSekolah");
+}
+
+get kategoriSekolahTrigger(): Locator {
+  return this.kategoriSekolahDropdown.locator('xpath=..').locator('.select-trigger');
+}
+
+// Study Dates
+get tarikhMulaInput(): Locator {
+  return this.page.locator('input[name="eduTanggungan0TarikhMulaPengajian"]');
+}
+
+get tarikhTamatInput(): Locator {
+  return this.page.locator('input[name="eduTanggungan0TarikhTamatPengajian"]');
+}
+
+// Tahun Pengajian Semasa (Year 1)
+get tahunPengajianDropdown(): Locator {
+  return this.page.locator('select[name="eduTanggungan0Tingkatan"]');
+}
+
+get tahunPengajianTrigger(): Locator {
+  return this.tahunPengajianDropdown.locator('xpath=..').locator('.select-trigger');
+}
+
+// Nama Sekolah / Institusi (UTM)
+get namaSekolahDropdown(): Locator {
+  return this.page.locator('select[name="eduTanggungan0NamaSekolah"]');
+}
+
+get namaSekolahTrigger(): Locator {
+  return this.namaSekolahDropdown.locator('xpath=..').locator('.select-trigger');
+}
+
+get suratTawaranUpload(): Locator {
+  return this.page
+    .locator(".custom-file-upload")
+    .filter({ has: this.page.locator('input[name="eduTanggungan0SuratTawaran"]') });
+}
+
+get suratTawaranFileInput(): Locator {
+  return this.suratTawaranUpload.locator('input[type="file"][accept="image/*,application/pdf"]');
+}
+
+get suratTawaranValue(): Locator {
+  return this.page.locator('input[name="eduTanggungan0SuratTawaran"]');
+}
+
+// Pembiayaan Pengajian (Tiada)
+get pembiayaanDropdown(): Locator {
+  return this.page.locator('select[name="eduTanggungan0PembiayaanPengajian"]');
+}
+
+get pembiayaanTrigger(): Locator {
+  return this.pembiayaanDropdown.locator('xpath=..').locator('.select-trigger');
+}
+
+// Catatan
+get catatanTextarea(): Locator {
+  return this.page.locator('textarea[name="eduTanggungan0Catatan"]');
+}
+
+// Asrama / Rumah Sewa (Tidak radio option)
+get tinggalAsramaTidakRadio(): Locator {
+  return this.page.locator('input[name="tinggal_bersama_keluarga_tanggungan"][value="T"]');
+}
+
+// Kemahiran Tanggungan (Tidak radio option)
+get adaKemahiranTidakRadio(): Locator {
+  return this.page.locator('input[name^="ada_kemahiran_tanggungan_editable"][value="T"]');
+}
+
+get adaAkaunBankYaRadio(): Locator {
+  return this.page.locator('input[name="ada_akaun_bank"][value="Y"]');
+}
+
+get adaAkaunBankTidakRadio(): Locator {
+  return this.page.locator('input[name="ada_akaun_bank"][value="T"]');
+}
+
 }

@@ -94,7 +94,7 @@ export default defineConfig({
     /**
      * Save screenshots and videos for failed tests.
      */
-    screenshot: 'only-on-failure',
+    screenshot: 'on',
 
     /**
      * Optional base URL.
