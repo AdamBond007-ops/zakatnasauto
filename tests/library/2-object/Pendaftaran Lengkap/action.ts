@@ -766,23 +766,8 @@ export class AduanAction {
     await expect(optionLocator).toBeChecked();
   }
 
-   async drawSignature(): Promise<void> {
-     const canvas = this.page.locator('canvas').first();
-     await canvas.waitFor({ state: 'visible' });
-     await canvas.scrollIntoViewIfNeeded();
-     const box = await canvas.boundingBox();
-
-     if (!box) {
-       throw new Error('Canvas bounding box not found');
-     }
-    await this.page.mouse.move(box.x + 20, box.y + box.height / 2);
-    await this.page.mouse.down();
-    await this.page.mouse.move(box.x + box.width / 4, box.y + 10);
-    await this.page.mouse.move(box.x + box.width / 2, box.y + box.height - 10);
-    await this.page.mouse.move(box.x + (box.width * 3) / 4, box.y + 20);
-    await this.page.mouse.move(box.x + box.width - 20, box.y + box.height / 2);
-    await this.page.mouse.up();
-  
+  async drawSignature(): Promise<void> {
+    await this.drawSignature1(this.main.pengesahanAkhirCanvas);
   }
 
   //EOAD Adam buat
