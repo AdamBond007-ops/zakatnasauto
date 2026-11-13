@@ -1,361 +1,299 @@
-import { test, expect, type Locator, type Page } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+import path from 'path';
 import { faker } from '@faker-js/faker';
-import path, { join } from 'path';
 import { LoginAction } from '@library/2-object/Login/action';
 import { CarianAsnafAction } from '@library/2-object/Carian Asnaf/action';
 import { TIMEOUTS } from '../../library/1-data/config/timeout-config';
 import { AduanAction } from '@library/2-object/Pendaftaran Lengkap/action';
-async function uploadFile(fileInput: Locator): Promise<void> {
-  await fileInput.setInputFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
+import { STATUS_PEKERJAAN } from '@library/2-object/Pendaftaran Lengkap/data';
+import { KelulusanAction } from '@library/2-object/Kelulusan/action';
+import { KemaskiniUAction } from '@library/2-object/Kemaskini U/action';
+
+
+function generateIC() {
+    // Random birth date
+    const birthDate = faker.date.birthdate({
+        min: 18,
+        max: 70,
+        mode: 'age',
+    });
+
+    // YYMMDD
+    const yy = birthDate.getFullYear().toString().slice(-2);
+    const mm = String(birthDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(birthDate.getDate()).padStart(2, '0');
+
+    // State code (01-14)
+    const stateCode = String(faker.number.int({ min: 1, max: 14 })).padStart(2, '0');
+
+    // Last 4 digits
+    const randomDigits = String(
+        faker.number.int({ min: 0, max: 9999 })
+    ).padStart(4, '0');
+
+    return `${yy}${mm}${dd}${stateCode}${randomDigits}`;
 }
 
-async function uploadFileFromButton(button: Locator): Promise<void> {
-  const [fileChooser] = await Promise.all([
-    button.page().waitForEvent('filechooser'),
-    button.click(),
-  ]);
-  await fileChooser.setFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
-}
+const firstName = faker.person.firstName();
 
-function generateMalaysianIc(): string {
-  const birthDate = faker.date.birthdate({ min: 19, max: 65, mode: 'age' });
-  const datePart = `${String(birthDate.getFullYear()).slice(-2)}${String(birthDate.getMonth() + 1).padStart(2, '0')}${String(birthDate.getDate()).padStart(2, '0')}`;
-  const stateCode = String(faker.number.int({ min: 1, max: 16 })).padStart(2, '0');
-  const serialNumber = `${faker.string.numeric(3)}${faker.helpers.arrayElement(['1', '3', '5', '7', '9'])}`;
-  return `${datePart}${stateCode}${serialNumber}`;
-}
-
-function generateApplicantName(): string {
-  return `END AUTO ${faker.lorem.word()}`;
-}
-
-function generateMalaysianPhoneNumber(): string {
-  const prefix = faker.helpers.arrayElement(['010', '011', '012', '013', '014', '016', '017', '018', '019']);
-  return `${prefix}${faker.string.numeric(prefix === '011' ? 8 : 7)}`;
-}
-
-function generateEmail(): string {
-  return `shafiyadam83+${faker.string.numeric(7)}@gmail.com`;
-}
-
-function generateBankAccountNumber(): string {
-  return faker.string.numeric(15);
-}
-
-async function drawStraightLine(page: Page, startX: number, startY: number, endX: number, endY: number): Promise<void> {
-  const canvas = page.locator('canvas');
-  const bounds = await canvas.boundingBox();
-  if (!bounds) {
-    throw new Error('Signature canvas is not visible');
-  }
-
-  await page.mouse.move(bounds.x + startX, bounds.y + startY);
-  await page.mouse.down();
-  await page.mouse.move(bounds.x + endX, bounds.y + endY, { steps: 20 });
-  await page.mouse.up();
-}
+const data = {
+    name: `MAZ ${firstName}`,
+    ic: generateIC(),
+    email: `maz.${firstName.toLowerCase()}${faker.number.int({ min: 100, max: 999 })}@gmail.com`,
+    phone: '0120101001',
+    address: 'F-3-4',
+};
 
 const TESTING_PDF = path.join(__dirname, '../../library/1-data/files/testing.pdf');
 
-test('test', async ({ page }) => {
-  const aduan = new AduanAction(page);
-  const applicantIc = generateMalaysianIc();
-  const applicantName = generateApplicantName();
-  const applicantPhone = generateMalaysianPhoneNumber();
-  const applicantEmail = generateEmail();
-  const bankAccountNumber = generateBankAccountNumber();
-  console.log('Generated applicant name:', applicantName);
 
+test('E2E-02', async ({ page }) => {
+    test.setTimeout(TIMEOUTS.TEN_MINUTES)
 
-    //EKP Login dan daftar baru asnaf
-  await page.goto('https://stg.nas-internal.com/profiling/asnaf/carian-profil/lihat/4348faf5-d758-11f1-b54a-0615d51725e3?isRekod=true');
+    // ------------------------------------------------
+    //        EOAD - Login
+    // ------------------------------------------------
+    const login = new LoginAction(page);
 
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('abdwalid');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.locator('a').filter({ hasText: 'Carian Asnaf' }).click();
-  await page.locator('div').filter({ hasText: /^Sila Pilih$/ }).click();
-  await page.getByRole('option', { name: 'MyKad / MyKid' }).click();
-  await page.locator('.formkit-inner.formkit-inner-text').first().click();
-  await page.getByRole('textbox', { name: 'No. Pengenalan' }).fill(applicantIc);
-  await page.getByRole('textbox', { name: 'Nama' }).click();
-  await page.getByRole('textbox', { name: 'Nama' }).fill(applicantName);
-  await page.getByRole('button', { name: 'Cari' }).click();
-  await page.getByRole('button', { name: 'Isi Borang Permohonan' }).click();
-  await page.getByRole('button', { name: 'Daftar tanpa Validasi' }).click();
-  await uploadFile(page.locator('input[type="file"]').first());
-  await page.getByRole('textbox', { name: 'Tempat Lahir' }).click();
-  await page.getByRole('textbox', { name: 'Tempat Lahir' }).fill('PUCHONh');
-  await page.getByText('Sila Pilih').first().click();
-  await page.locator('span').filter({ hasText: 'Melayu' }).first().click();
-  await page.getByRole('textbox', { name: 'No. Telefon Bimbit*' }).click();
-  await page.getByRole('textbox', { name: 'No. Telefon Bimbit*' }).fill(applicantPhone);
-  await page.getByRole('textbox', { name: 'Emel*' }).click();
-  await page.getByRole('textbox', { name: 'Emel*' }).fill(applicantEmail);
-  await page.getByText('Sila Pilih').first().click();
-  await page.locator('span').filter({ hasText: 'Duda' }).first().click();
-  await page.getByRole('textbox', { name: 'No Rumah / Lot / Blok*' }).click();
-  await page.getByRole('textbox', { name: 'No Rumah / Lot / Blok*' }).fill('PUCONG129812');
-  await page.getByRole('textbox', { name: 'Poskod*' }).click();
-  await page.getByRole('textbox', { name: 'Poskod*' }).fill('46200');
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByText('Sila Pilih').first().click();
-  await page.getByRole('textbox', { name: 'Sila Pilih' }).fill('abu bakar');
-  await page.locator('span').filter({ hasText: 'MASJID ABU BAKAR AS-SIDDIQ' }).first().click();
-  await page.getByText('Sila Pilih').first().click();
-  await page.locator('span').filter({ hasText: 'Tahun' }).first().click();
-  await page.getByRole('spinbutton', { name: 'Tempoh Menetap di Selangor*' }).click();
-  await page.getByRole('spinbutton', { name: 'Tempoh Menetap di Selangor*' }).fill('6');
-  await page.getByText('Sila Pilih').first().click();
-  await page.locator('span').filter({ hasText: 'Milik Sendiri Berbayar' }).first().click();
-  await page.getByText('Sila Pilih').click();
-  await page.locator('span').filter({ hasText: 'Separa Uzur' }).first().click();
-  await page.getByRole('textbox', { name: 'Kadar Bayaran Bulanan jika' }).click();
-  await page.getByRole('textbox', { name: 'Kadar Bayaran Bulanan jika' }).fill('300');
-  await page.getByRole('button', { name: 'Seterusnya' }).click();
-  await aduan.selectMuallaf('T');
+    await login.goto();
+    await login.fillIdPengguna('habibullah');
+    await login.fillKataLaluan('Password123@');
+    await login.clickLogMasuk();
+    await page.waitForLoadState('load');
+
+    // ------------------------------------------------
+    //        Carian Asnaf
+    // ------------------------------------------------
+    const carian = new CarianAsnafAction(page);
+
+    await carian.openCarianAsnaf();
+    await page.waitForLoadState('load');
+    await carian.selectJenisPengenalan('MyKad / MyKid');
+    await carian.fillNoPengenalan(data.ic);
+    await carian.fillNama(data.name);
+    await carian.clickCari();
+    await carian.clickIsiBorangPermohonan();
+    await carian.clickDaftarTanpaValidasi();
+
+    await page.waitForLoadState('load');
+
+    // ------------------------------------------------
+    //        Pendaftaran Lengkap (Aduan form)
+    // ------------------------------------------------
+    const aduan = new AduanAction(page);
+
+    await aduan.fillNoTelefon(data.phone);
+    await aduan.selectStatusPerkahwinan('Bujang');
+    await aduan.fillAlamat1('RUMAH');
+    await aduan.fillAlamat2('JALAN');
+    await aduan.fillPoskod('46200');
+    await aduan.selectKariah('MASJID ABU BAKAR AS-SIDDIQ SUBANG JAYA');
+    await aduan.selectTahapKeperluan('Kecemasan', 'Tiada bekalan makanan mencukupi');
+    await aduan.fillPernyataanMasalah('masalah');
+    await aduan.setConsent(true);
+    await aduan.clickSimpan();
+
+    // ------------------------------------------------
+    //        Step 2: Maklumat tambahan
+    // ------------------------------------------------
+    await aduan.uploadDokumenId(TESTING_PDF, 'testing.pdf');
+    await aduan.fillEmel(data.email);
+    await aduan.selectTempohUnit('Bulan');
+    await aduan.fillTempohMenetap('2');
+    await aduan.selectStatusKediaman('Milik Sendiri Tidak Berbayar');
+    await aduan.selectKeadaanKediaman('Baik/Sempurna');
+    await aduan.selectMuallaf('T');
     await aduan.selectMuflis('T');
-    await aduan.selectAdaAkaunBank('Y');
-  await page.getByText('Sila Pilih').click();
-  await page.getByLabel('Nama Bank', { exact: true }).getByText('AFFIN BANK BERHAD').click();
-  await page.getByRole('textbox', { name: 'No. Akaun Bank*' }).click();
-  await page.getByRole('textbox', { name: 'No. Akaun Bank*' }).fill(bankAccountNumber);
-  await uploadFile(page.locator('input[type="file"]').first());
-  await page.getByRole('button', { name: 'Seterusnya' }).click();
-  
-      await page.waitForLoadState('load');
-      await page.waitForTimeout(3000);
-  
-      await aduan.selectStatusPekerjaan('0');
+    await aduan.selectAdaAkaunBank('T');
+    /*await aduan.selectNamaBank('MALAYAN BANKING BERHAD');
+    await aduan.fillNoAkaunBank('11111111111111111');
+    await aduan.uploadPenyataBank(TESTING_PDF, 'testing.pdf');*/
+    await aduan.selectTahapKesihatan('Sihat');
+    await aduan.clickSeterusnya();
 
-  await page.getByRole('button', { name: 'Teruskan Had Kifayah' }).click();
-  await page.getByRole('row', { name: 'Dewasa Bekerja (18 Tahun ke Atas)' }).getByRole('spinbutton').click();
-  await page.getByRole('row', { name: 'Dewasa Bekerja (18 Tahun ke Atas)' }).getByRole('spinbutton').fill('01');
-  await page.getByRole('row', { name: '2. Dewasa Tidak Bekerja ( 18' }).getByRole('spinbutton').click();
-  await page.getByRole('row', { name: '2. Dewasa Tidak Bekerja ( 18' }).getByRole('spinbutton').fill('01');
-  await page.getByRole('button', { name: 'Seterusnya' }).click();
-  await page.getByText('Daftar / Kemaskini /').click();
-  await page.getByText('Memerlukan bantuan untuk').click();
-  await uploadFile(page.locator('input[type="file"]').first());
-  await page.getByRole('textbox', { name: 'Pernyataan Masalah*' }).click();
-  await page.getByRole('textbox', { name: 'Pernyataan Masalah*' }).fill('macaalah');
-  await page.getByRole('button', { name: 'Seterusnya' }).click();
+    await aduan.selectMasihBelajar('02');
+    await aduan.selectPendidikanTertinggi('Diploma');
+    await aduan.selectAdaKemahiran('T');
+    await aduan.clickSeterusnya();
 
+    await aduan.selectAdaPinjaman('T');
+    await aduan.selectAdaAset('T');
+    await aduan.clickSeterusnya();
 
-  await page.getByRole('button', { name: 'Mohon Bantuan Baru' }).click();
-  await page.getByText('Sila Pilih').first().click();
-  await page.getByLabel('Aid', { exact: true }).getByText('(HQ) BANTUAN KEPERLUAN HIDUP').click();
-  await page.getByText('Sila Pilih').first().click();
-  await page.getByRole('option', { name: '(HQ) KATEGORI MAKAN/MINUM (' }).click();
-  await page.locator('div').filter({ hasText: /^Sila Pilih$/ }).first().click();
-  await page.getByRole('option', { name: '(HQ) KATEGORI MAKAN/MINUM (' }).click();
-  await page.locator('.w-4.h-4.border').click();
-  await page.getByRole('textbox', { name: 'Penyataan Sebab Permohonan' }).click();
-  await page.getByRole('textbox', { name: 'Penyataan Sebab Permohonan' }).fill('maslaha nok');
-  await page.getByRole('button', { name: 'Edit' }).click();
-  await page.getByRole('textbox', { name: 'Kadar Bantuan (RM)*' }).click();
-  await page.getByRole('textbox', { name: 'Kadar Bantuan (RM)*' }).fill('100');
-  await page.locator('button').filter({ hasText: /^Simpan$/ }).click();
-  await uploadFile(page.locator('input[type="file"]').nth(1));
-  await uploadFile(page.locator('input[type="file"]').nth(2));
-  await page.getByRole('textbox', { name: 'Nama/rujukan dokumen' }).click();
-  await page.getByRole('textbox', { name: 'Nama/rujukan dokumen' }).fill('8282882');
+    await aduan.selectStatusPekerjaan('0');
+    // await aduan.selectSektorPekerjaan('Swasta');
+    // await aduan.fillPendapatanKasar('300.00');
+    // await aduan.uploadPengesahanPendapatan(TESTING_PDF, 'testing.pdf');
+    await aduan.clickSelesai();
 
-  await page.getByRole('button', { name: 'Simpan' }).click();
-  await page.getByRole('button', { name: 'Ya, Simpan' }).click();
-  await page.getByRole('button', { name: 'OK' }).click();
-  await page.getByRole('button', { name: 'Seterusnya', exact: true }).click();
-  await aduan.pilihKakitanganLzs('T');
-  await aduan.pilihPenolongAmil('T');
-  await aduan.drawSignatureEOAD();
-  await page.getByRole('button', { name: 'Hantar Permohonan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'Log Keluar' }).click();
+    await page.waitForTimeout(3000);
 
-  //EOAD sokong
+    await aduan.clickTanggungan();
+    await page.waitForLoadState('load');
 
- 
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('habibullah');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.locator('a').filter({ hasText: 'Sokongan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('searchbox', { name: 'Cari...' }).click();
-  await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
-  await page.getByRole('button', { name: 'Lihat Sokongan' }).click();
-  await page.getByRole('button', { name: 'Maklumat Pemohon' }).click();
- await uploadFile(page.locator('input[type="file"]').first());
-  await page.locator('#stepForm-1 div').filter({ hasText: /^Sila Pilih$/ }).click();
-  await page.locator('span').filter({ hasText: 'Sihat' }).first().click();
-  await page.getByRole('button', { name: 'Pendidikan & Kemahiran Belum' }).click();
-  await aduan.pilihMasihBersekolah('02');
-  await page.locator('#stepForm-2').getByText('Sila Pilih', { exact: true }).click();
-  await page.locator('span').filter({ hasText: 'SPM' }).first().click();
-  await uploadFile(page.locator('input[type="file"]').first());
-  await aduan.pilihAdaKemahiran('Y');
-  await page.getByRole('checkbox', { name: 'Nelayan' }).check();
-  await page.getByRole('button', { name: 'Pinjaman & Aset Belum Selesai' }).click();
-  await aduan.pilihAdaPinjaman('T');
-  await aduan.pilihAdaAset('T');
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  
-  await page.getByRole('button', { name: 'Tanggungan' }).click();
-  await page.getByRole('button', { name: 'Simpan', exact: true }).click();
-  await page.getByRole('button', { name: 'Status Asnaf' }).click();
-  await page.getByRole('button', { name: 'Simpan', exact: true }).click();
-  await page.getByRole('button', { name: 'Bantuan', exact: true }).click();
-  await page.getByRole('button', { name: 'Lihat / Kemaskini' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByText('Sila Pilih', { exact: true }).click();
-  await page.locator('span').filter({ hasText: 'Sokong' }).nth(1).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).fill('sokong');
-  await page.getByRole('button', { name: 'Simpan' }).click();
-  await page.locator('#kaedah-siasatan-form div').filter({ hasText: /^Sila Pilih$/ }).click();
-  await page.locator('span').filter({ hasText: 'Lapangan' }).first().click();
-  await page.getByRole('textbox', { name: 'Masa Siasatan*' }).fill('10:40');
-  await uploadFile(page.locator('input[type="file"]').first());
-  await page.getByRole('textbox', { name: 'Laporan Siasatan*' }).click();
-  await page.getByRole('textbox', { name: 'Laporan Siasatan*' }).fill('kkjjk');
-  await page.getByRole('radio', { name: 'Tandatangan Digital' }).check();
-  await aduan.drawSignatureEOAD();
-  await page.getByRole('button', { name: 'Sahkan Lawatan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'Pengesahan' }).click();
-  await uploadFileFromButton(page.getByRole('button', { name: 'Pilih Fail', exact: true }));
-  await aduan.pilihSokongan('SOKONG');
-  await page.getByRole('textbox', { name: 'Catatan*' }).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).fill('sokong');
-  await page.getByRole('button', { name: 'Hantar' }).click();
-  await page.getByRole('button', { name: 'Ya, Hantar' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'OK' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'Log Keluar' }).click();
+    await aduan.clickTambahTanggungan();
+    await page.waitForLoadState('load');
 
-  //KOAD LUlus
+    // ------------------------------------------------
+    //        Tanggungan
+    // ------------------------------------------------
+    await aduan.fillNamaTanggungan(`A ${faker.person.firstName().toUpperCase()}`);
+    await aduan.selectJenisPengenalanTanggungan('MyKad / MyKid');
+    await aduan.fillNoPengenalanTanggungan(generateIC());
+    await aduan.selectHubunganTanggungan('Anak Lelaki');
+    await aduan.selectJantinaTanggungan('Lelaki');
+    await aduan.selectBangsaTanggungan('Melayu');
+    await aduan.clickSimpanTanggungan();
+    await page.waitForTimeout(3000);
+    await aduan.clickEditTanggungan();
+    await page.waitForTimeout(1000);
 
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('m.sharil');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.locator('a').filter({ hasText: 'Kelulusan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('searchbox', { name: 'Cari...' }).click();
-  await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
-  await page.getByRole('button', { name: 'Lihat Kelulusan' }).first().click();
-  await page.getByRole('button', { name: 'Bantuan', exact: true }).click();
-  await page.getByRole('button', { name: 'Lihat / Tindakan' }).click();
+    await aduan.uploadTanggunganDokumenId(TESTING_PDF, 'testing.pdf');
+    await aduan.selectTanggunganTempohUnit('Bulan');
+    await aduan.fillTanggunganTempohMenetap('5');
+    await aduan.selectTanggunganStatusPerkahwinan('Bujang');
+    await aduan.selectTanggunganMuallaf('T');
+    await aduan.selectTanggunganMuflis('T');
+    await aduan.selectTanggunganTahapKesihatan('Sihat');
 
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByText('Sila Pilih', { exact: true }).click();
-  await page.locator('span').filter({ hasText: 'Lulus' }).nth(3).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).fill('lulus');
-  await page.getByRole('button', { name: 'Simpan' }).click();
-  await page.getByRole('button', { name: 'Pengesahan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await aduan.pilihKeputusan('LULUS');
-  await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).click();
-  await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).fill('lulus');
-  await page.getByRole('button', { name: 'Hantar' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'Ya, Hantar' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'OK' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'Log Keluar' }).click();
+    await aduan.clickSeterusnya();
 
+    await aduan.selectTanggunganMasihBersekolah('02');
+    await aduan.selectTanggunganPendidikanTertinggi('Diploma');
 
-  //KEMASKINI
+    await aduan.clickSeterusnya();
 
-  
-   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-    await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('abdwalid');
-    await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-    await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-    await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-    await page.locator('a').filter({ hasText: 'Carian Asnaf' }).click();
-    await page.getByRole('textbox', { name: 'Nama', exact: true }).click();
-    await page.getByRole('textbox', { name: 'Nama', exact: true }).fill(applicantName);
-    await page.getByRole('button', { name: 'Cari' }).click();
-    await page.waitForTimeout(TIMEOUTS.SHORT);
+    await aduan.selectTanggunganAdaPinjaman('T');
+    await aduan.selectTanggunganAdaAset('T');
+
+    await aduan.clickSeterusnya();
+
+    await aduan.selectTanggunganStatusPekerjaan(STATUS_PEKERJAAN.TIDAK_BEKERJA);
+
+    await aduan.clickSimpan();
+    await page.waitForTimeout(3000);
+    // ------------------------------------------------
+    //        Permohonan Bantuan
+    // ------------------------------------------------
+
+    await aduan.clickBantuan();
+    await aduan.clickMohonBantuanBaru();
+
+    await aduan.selectAid('(HQ) BANTUAN KEPERLUAN HIDUP (FAKIR)');
+    await aduan.selectAidProduct('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.selectProductPackage('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.setEntitlementProduct('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.setCashCounter(true);
+    await aduan.fillPenyataanSebab('sda');
+
+    await aduan.clickEditEntitlement('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.fillKadarBantuan('20.00');
+    await aduan.clickSimpanBantuan();
+
+    await aduan.uploadDokumenSokongan(0, TESTING_PDF, 'testing.pdf');
+    await aduan.selectStatusDokumenSokongan(0, 'Lengkap');
+    await aduan.selectStatusDokumenSokongan(1, 'Tiada Keperluan');
+    await aduan.fillCatatanDokumenSokongan(0, 'catatan');
+
+    await aduan.fillNamaDokumenLzs(0, 'Dokumen LZS');
+    await aduan.uploadDokumenLzs(0, TESTING_PDF);
+    await aduan.fillCatatanDokumenLzs(0, 'catatan lzs');
+
+    await aduan.selectStatusSiasatan('Sokong');
+    await aduan.fillCatatanSiasatan('dsa');
+
+    await aduan.expectStatusDokumenSokongan('LENGKAP');
+    await aduan.clickSimpan();
+    await aduan.clickYaSimpan();
+    await aduan.clickOk();
+
+    await aduan.clickBantuan();
+    await aduan.selectKaedahSiasatan('Lapangan');
+    //await aduan.fillTarikhSiasatan('2026-11-05');   // optional, already today
+    await aduan.fillMasaSiasatan('10:30');
+    //await aduan.uploadGambarSiasatan(TESTING_IMG);
+    await aduan.fillLaporanSiasatan('Siasatan lapangan telah dijalankan');
+    await aduan.selectPengesahanLawatan('tandatangan');
+    await aduan.lukisTandatangan();
+    await aduan.clickSahkanLawatan();
+
+    await aduan.clickPengesahan();
+    await aduan.clickStepPengesahanAkhir();
+    await aduan.selectHubunganKakitanganLzs('T');
+    await aduan.selectHubunganPenolongAmil('T');
+    await aduan.lukisTandatanganPengesahanAkhir();
+    await aduan.expectTarikhPerakuan();
+    await aduan.fillCatatanSokongan('Catatan sokongan');
+    await aduan.clickHantar();
+    await aduan.yaHantar();
+    await aduan.clickOk();
+    await aduan.clickTeruskanChoice('Tidak');
+    await page.waitForTimeout(3000);
+    await login.logout();
+
+    // ------------------------------------------------
+    //        KOAD LOGIN
+    // ------------------------------------------------
+    await login.goto();
+    await login.fillIdPengguna('m.sharil');
+    await login.fillKataLaluan('Password123@');
+    await login.clickLogMasuk();
+    await page.waitForLoadState('load');
+    const kelulusan = new KelulusanAction(page);
+    await kelulusan.goToKelulusan();
+    await kelulusan.cariByIc(data.ic);
+    await kelulusan.clickLihatKelulusan(data.ic);
+    await kelulusan.clickDetailTab('Bantuan');
+    await kelulusan.clickLihatTindakanBantuanByNama(data.name);
+    await kelulusan.selectStatusKelulusan('Lulus');
+    await kelulusan.fillCatatanBantuan('Permohonan diluluskan.');
+    await aduan.clickSimpan();
+    await kelulusan.openKeputusanKelulusan();
+    await kelulusan.selectKeputusan('Lulus');
+    await kelulusan.fillCatatanKelulusan('lulus');
+    await aduan.clickHantar();
+    await aduan.yaHantar();
+    await page.waitForTimeout(3000);
+    await aduan.clickOk();
+    await login.logout();
+
+    // ------------------------------------------------
+    //        Kemaskini Profil Tanpa Kelulusan
+    // ------------------------------------------------
+    await login.goto();
+    await login.fillIdPengguna('habibullah');
+    await login.fillKataLaluan('Password123@');
+    await login.clickLogMasuk();
+    await page.waitForLoadState('load');
+
+    const kemaskiniU = new KemaskiniUAction(page);
     
-    await page.getByRole('button', { name: 'Lihat Profil' }).first().click();
-    await page.getByRole('button', { name: 'Kemaskini' }).click();
-    await page.getByRole('button', { name: 'Ya, Kemaskini' }).click();
-  
-    await page.getByText('Daftar / Kemaskini /').click();
-    await page.locator('label').filter({ hasText: 'Pendaftaran baharu atau' }).click();
-    await uploadFile(page.locator('input[type="file"]').first());
-    await page.getByRole('textbox', { name: 'Pernyataan Masalah*' }).click();
-    await page.getByRole('textbox', { name: 'Pernyataan Masalah*' }).fill('masalah');
-    await page.getByRole('button', { name: 'Seterusnya', exact: true }).click();
-    await page.getByRole('button', { name: 'Status Asnaf' }).click();
-    await page.locator('span').filter({ hasText: 'Aktif' }).click();
-    await page.locator('span').filter({ hasText: 'Keluar Selangor' }).first().click();
-    await page.getByRole('button', { name: 'Simpan' }).click();
-    await page.waitForTimeout(TIMEOUTS.SHORT);
-    await page.getByRole('button', { name: 'Pengesahan', exact: true }).click();
-    await page.getByRole('button', { name: 'Pengesahan Akhir Belum' }).click();
-    await page.locator('[data-test="pengesahan-method-toggle"]').getByText('Tidak Memerlukan Tanda tangan').click();
-    await page.getByRole('button', { name: 'Hantar Permohonan' }).click();
-    await page.getByRole('button', { name: 'Ya, Hantar' }).click();
-    await page.getByRole('button', { name: 'OK' }).click();
+    await carian.openCarianAsnaf();
+    await page.waitForLoadState('load');
+    await carian.selectJenisPengenalan('MyKad / MyKid');
+    await carian.fillNoPengenalan(data.ic);
+    await carian.fillNama(data.name);
+    await carian.clickCari();
+
+    await kemaskiniU.clickLihatProfil(data.ic);
+    await kemaskiniU.clickKemaskini();
+    await kemaskiniU.confirmKemaskini();
+
+    await kemaskiniU.selectTahapDaftarKemaskini();
+    await kemaskiniU.selectPendaftaranBaharuPerubahanMaklumat();
+    await kemaskiniU.fillPernyataanMasalah('masalah');
+    await kemaskiniU.uploadAduanLampiran(TESTING_PDF, 'testing.pdf');
+    await aduan.clickSeterusnya();
+    await page.waitForTimeout(3000);
+    await kemaskiniU.fillTempatLahir(faker.lorem.words(2));
+    await aduan.clickSimpan();
+    await aduan.clickPengesahan();
+    await aduan.clickStepPengesahanAkhir();
     
-      await page.getByRole('button', { name: 'Log Keluar' }).click();
-  
-    //EOAD
-   
-    await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-    await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('habibullah');
-    await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-    await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-    await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-    await page.locator('a').filter({ hasText: 'Sokongan' }).click();
-    await page.waitForTimeout(TIMEOUTS.LONG);
-  await page.getByRole('searchbox', { name: 'Cari...' }).click();
-  await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
-    
-    await page.getByRole('button', { name: 'Lihat Sokongan' }).first().click();
-    await page.getByRole('button', { name: 'Status Asnaf' }).click();
-    await page.getByRole('button', { name: 'Pengesahan' }).click();
-    await page.locator('div').filter({ hasText: /^Sokong$/ }).click();
-    await page.getByRole('option', { name: 'Sokong' }).click();
-    await page.getByRole('textbox', { name: 'Catatan*' }).click();
-    await page.getByRole('textbox', { name: 'Catatan*' }).fill('sokong');
-    await page.getByRole('button', { name: 'Hantar' }).click();
-    await page.getByRole('button', { name: 'Ya, Hantar' }).click();
-    await page.waitForTimeout(TIMEOUTS.SHORT);
-    await page.getByRole('button', { name: 'OK' }).click();
-    await page.waitForTimeout(TIMEOUTS.SHORT);
-    await page.getByRole('button', { name: 'Log Keluar' }).click();
-  
-  
-    //KOAD
-    
-    await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-    await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('m.sharil');
-    await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-    await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-    await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-    await page.locator('a').filter({ hasText: 'Kelulusan' }).click();
-    await page.waitForTimeout(TIMEOUTS.LONG);
-  
-    await page.getByRole('searchbox', { name: 'Cari...' }).click();
-  await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
-    await page.getByRole('button', { name: 'Lihat Kelulusan' }).first().click();
-    await page.waitForTimeout(TIMEOUTS.SHORT);
-    await aduan.pilihKeputusan('LULUS');
-    await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).click();
-    await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).fill('lulus');
-    await page.getByRole('button', { name: 'Hantar' }).click();
-    await page.getByRole('button', { name: 'Ya, Hantar' }).click();
-    await page.getByRole('button', { name: 'OK' }).click();
+    await kemaskiniU.selectTiadaTandatanganDigital();
+    await kemaskiniU.fillCatatan('Kemaskini profil tanpa kelulusan.');
+    await aduan.clickHantar();
+    await aduan.yaHantar();
+    await aduan.clickOk();
 
 });

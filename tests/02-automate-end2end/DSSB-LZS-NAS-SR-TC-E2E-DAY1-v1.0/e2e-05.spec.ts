@@ -47,6 +47,28 @@ async function drawStraightLine(page: Page, startX: number, startY: number, endX
   await page.mouse.up();
 }
 
+async function drawSignature(page: Page): Promise<void> {
+  const formCanvas = page.locator('#pengesahanAkhirForm canvas');
+  const canvas = (await formCanvas.count()) > 0 ? formCanvas.first() : page.locator('canvas').first();
+
+  await canvas.waitFor({ state: 'visible', timeout: 15000 });
+  await canvas.scrollIntoViewIfNeeded();
+
+  const box = await canvas.boundingBox();
+  if (!box) {
+    throw new Error('Signature canvas not visible');
+  }
+
+  const { x, y, width: w, height: h } = box;
+  await page.mouse.move(x + w * 0.1, y + h * 0.6);
+  await page.mouse.down();
+  await page.mouse.move(x + w * 0.25, y + h * 0.2, { steps: 12 });
+  await page.mouse.move(x + w * 0.5, y + h * 0.8, { steps: 12 });
+  await page.mouse.move(x + w * 0.7, y + h * 0.25, { steps: 12 });
+  await page.mouse.move(x + w * 0.9, y + h * 0.6, { steps: 12 });
+  await page.mouse.up();
+}
+
 const TESTING_PDF = path.join(__dirname, '../../library/1-data/files/testing.pdf');
 
 test('test', async ({ page }) => {
@@ -165,9 +187,9 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Seterusnya', exact: true }).click();
   await aduan.pilihKakitanganLzs('T');
   await aduan.pilihPenolongAmil('T');
-  await aduan.drawSignature();
+  await drawSignature(page);
   await page.getByRole('button', { name: 'Hantar Permohonan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
+  await page.waitForTimeout(6000);
   await page.getByRole('button', { name: 'Log Keluar' }).click();
 
   //EOAD agih tugas

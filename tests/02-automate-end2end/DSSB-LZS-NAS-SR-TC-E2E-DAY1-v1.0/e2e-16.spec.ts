@@ -17,6 +17,19 @@ async function uploadFileFromButton(button: Locator): Promise<void> {
   await fileChooser.setFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
 }
 
+async function pilihKaedahSiasatan(page:Page, option = 'Lapangan') {
+  // Click the visible trigger (not the hidden <select>)
+  const trigger = page
+    .locator('.formkit-select-search')
+    .filter({ has: page.locator('.placeholder-text') });
+  await trigger.locator('.select-trigger').click();
+
+  // Click the option in the opened dropdown
+  await page.getByRole('option', { name: option }).click();
+  // If options aren't role=option, fall back to text:
+  // await page.getByText(option, { exact: true }).click();
+}
+
 function generateMalaysianIc(): string {
   const birthDate = faker.date.birthdate({ min: 19, max: 65, mode: 'age' });
   const datePart = `${String(birthDate.getFullYear()).slice(-2)}${String(birthDate.getMonth() + 1).padStart(2, '0')}${String(birthDate.getDate()).padStart(2, '0')}`;
@@ -55,6 +68,37 @@ async function drawStraightLine(page: Page, startX: number, startY: number, endX
   await page.mouse.up();
 }
 
+async function isiTarikhSiasatan(page:Page, date = new Date()) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const iso = `${yyyy}-${mm}-${dd}`;
+
+  await page.getByLabel(/Tarikh Siasatan/).fill(iso); // or page.locator('input[type="date"]')
+  return iso;
+}
+
+async function isiMasaSiasatan(page:Page, time = '09:30') {
+  // by label
+  await page.getByLabel(/Masa Siasatan/).fill(time);
+
+  // OR by type (no auto-generated id)
+  // await page.locator('input[type="time"]').fill(time);
+}
+
+async function isiLaporanSiasatan(page: Page, laporan: string): Promise<void> {
+  // by label
+  await page.getByLabel(/Laporan Siasatan/).fill(laporan);
+
+  // fallback by name attribute (stable, not auto-generated)
+  // await page.locator('textarea[name="textarea_5"]').fill(laporan);
+
+  // fallback by placeholder
+  // await page.getByPlaceholder(/Nyatakan laporan siasatan/).fill(laporan);
+}
+
+
+
 const TESTING_PDF = path.join(__dirname, '../../library/1-data/files/testing.pdf');
 
 test('test', async ({ page }) => {
@@ -68,7 +112,7 @@ test('test', async ({ page }) => {
 
 
     //EKP Login dan daftar baru asnaf
-  await page.goto('https://stg.nas-internal.com/profiling/asnaf/carian-profil/lihat/4348faf5-d758-11f1-b54a-0615d51725e3?isRekod=true');
+ await page.goto('https://stg.nas-internal.com/login');
 
   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
   await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('abdwalid');
@@ -181,6 +225,7 @@ test('test', async ({ page }) => {
   await page.getByRole('searchbox', { name: 'Cari...' }).click();
   await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
   await page.getByRole('button', { name: 'Lihat Sokongan' }).click();
+  await page.waitForTimeout(5000);
   await page.getByRole('button', { name: 'Maklumat Pemohon' }).click();
  await uploadFile(page.locator('input[type="file"]').first());
   await page.locator('#stepForm-1 div').filter({ hasText: /^Sila Pilih$/ }).click();
@@ -240,6 +285,7 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Ya, Hantar' }).click();
   await page.waitForTimeout(TIMEOUTS.SHORT);
   await page.getByRole('button', { name: 'OK' }).click();
+  await page.waitForTimeout(3000);
 
   //ETD siasat
 //    await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
@@ -270,6 +316,7 @@ test('test', async ({ page }) => {
   await page.locator('span').filter({ hasText: '(PEROLEHAN) BINA RUMAH (FAKIR)' }).first().click();
   await page.locator('.w-4.h-4.border').click();
   await page.getByRole('button', { name: 'Kemaskini' }).click();
+  await page.waitForTimeout(3000);
   await page.getByRole('checkbox', { name: 'Gunakan Alamat Profil' }).check();
   await page.getByText('Sila Pilih').first().click();
   await page.locator('span').filter({ hasText: 'HQ - IBU PEJABAT LZS' }).first().click();
@@ -279,6 +326,7 @@ test('test', async ({ page }) => {
   await page.getByRole('cell', { name: 'BUKA RUMAH' }).first().click();
   await page.getByRole('button', { name: 'Simpan' }).nth(1).click();
   await page.getByRole('button', { name: 'Simpan' }).click();
+  await page.waitForTimeout(3000);
   await page.getByRole('button', { name: 'Laporan Gambar' }).click();
   await page.getByRole('button', { name: 'Laporan Gambar' }).nth(1).click();
   await uploadFile(page.locator('input[type="file"]').first());
@@ -286,6 +334,7 @@ test('test', async ({ page }) => {
   await page.getByText('BQLaporan GambarLaporan TeknikalBQ Bill of Quantity untuk kerja-kerja cadangan').click();
   await page.getByRole('button', { name: 'Laporan Teknikal' }).click();
   await page.getByRole('button', { name: 'Laporan Teknikal' }).nth(1).click();
+  await page.waitForTimeout(3000);
   await page.getByText('Sila Pilih').first().click();
   await page.locator('span').filter({ hasText: 'Milik Sendiri' }).first().click();
   await page.getByText('Sila Pilih', { exact: true }).click();
@@ -295,17 +344,18 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Cadangan*' }).click();
   await page.getByRole('textbox', { name: 'Cadangan*' }).fill('qwqwwq');
   await page.getByRole('button', { name: 'Simpan' }).click();
+  await page.waitForTimeout(5000);
   await page.getByText('Sila Pilih', { exact: true }).click();
   await page.locator('span').filter({ hasText: 'Sokong' }).first().click();
   await page.getByRole('textbox', { name: 'Catatan*' }).click();
   await page.getByRole('textbox', { name: 'Catatan*' }).fill('sokong');
   await page.getByRole('button', { name: 'Simpan' }).click();
-  await page.getByText('Sila Pilih', { exact: true }).click();
+  await page.waitForTimeout(3000);
+  await page.locator('#kaedah-siasatan-form').getByText('Sila Pilih', { exact: true }).click();
   await page.locator('span').filter({ hasText: 'Lapangan' }).first().click();
-  await page.getByRole('textbox', { name: 'Masa Siasatan*' }).fill('11:26');
+  await page.getByRole('textbox', { name: 'Masa Siasatan*' }).fill('11:58');
   await uploadFile(page.locator('div:nth-child(4) > .formkit-wrapper > .formkit-inner > .custom-file-upload > input').first());
-  await page.getByRole('textbox', { name: 'Laporan Siasatan*' }).click();
-  await page.getByRole('textbox', { name: 'Laporan Siasatan*' }).fill('maammaa');
+  await isiLaporanSiasatan(page, 'Lawatan dijalankan, penerima disahkan layak.');
   await page.getByRole('radio', { name: 'Tandatangan Digital' }).check();
   await aduan.drawSignatureEOAD();
   await page.getByRole('button', { name: 'Sahkan Lawatan' }).click();

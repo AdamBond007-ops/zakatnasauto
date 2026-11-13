@@ -8,6 +8,7 @@ async function uploadFile(fileInput: Locator): Promise<void> {
 
 test('test', async ({ page }) => {
  
+   await page.goto('https://stg.nas-internal.com/login');
  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
   await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('abdwalid');
   await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
@@ -16,6 +17,7 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Tuntutan' }).click();
   await page.locator('a').filter({ hasText: 'Senarai Tuntutan' }).click();
   await page.locator('a').filter({ hasText: 'Pengurusan Tuntutan' }).click();
+  await page.waitForTimeout(3000);
   await page.getByRole('searchbox', { name: 'Cari...' }).click();
   await page.getByRole('searchbox', { name: 'Cari...' }).fill('kaxxx');
   await page.getByRole('button', { name: 'Mohon Tuntutan' }).first().click();
@@ -43,6 +45,8 @@ test('test', async ({ page }) => {
   await page.locator('a').filter({ hasText: 'Senarai Kelulusan' }).click();
   await page.getByRole('searchbox', { name: 'Cari...' }).click();
   await page.getByRole('searchbox', { name: 'Cari...' }).fill('kaxxx');
+  await page.waitForTimeout(5000);
+
   await page.getByRole('button', { name: 'Lihat' }).click();
   await page.getByRole('table').getByText('Sila Pilih', { exact: true }).click();
   await page.locator('span').filter({ hasText: 'Lengkap' }).first().click();
