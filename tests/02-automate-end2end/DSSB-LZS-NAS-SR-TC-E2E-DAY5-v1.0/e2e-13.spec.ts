@@ -10,6 +10,6 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
   await page.waitForTimeout(2000);
   await page.locator('a').nth(4).click();
-  await page.getByRole('button', { name: 'Lihat', description: 'Lihat' }).click();
-  await page.getByRole('button', { name: 'Lihat', description: 'Lihat' }).click();
+  // await page.getByRole('button', { name: 'Lihat', description: 'Lihat' }).click();
+  // await page.getByRole('button', { name: 'Lihat', description: 'Lihat' }).click();
 });

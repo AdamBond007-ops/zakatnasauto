@@ -8,7 +8,6 @@ import { AduanAction } from '@library/2-object/Pendaftaran Lengkap/action';
 import { STATUS_PEKERJAAN } from '@library/2-object/Pendaftaran Lengkap/data';
 import { KelulusanAction } from '@library/2-object/Kelulusan/action';
 import { KemaskiniUAction } from '@library/2-object/Kemaskini U/action';
-import { EoadSokonganAction } from '@library/2-object/EOAD Sokongan/action';
 
 
 function generateIC() {
@@ -52,18 +51,12 @@ test('E2E-02', async ({ page }) => {
     test.setTimeout(TIMEOUTS.TEN_MINUTES)
 
     // ------------------------------------------------
-    //        PAK - Login
+    //        EOAD - Login
     // ------------------------------------------------
     const login = new LoginAction(page);
-    const aduan = new AduanAction(page);
-    const carian = new CarianAsnafAction(page);
-    const kelulusan = new KelulusanAction(page);
-    const kemaskiniU = new KemaskiniUAction(page);
-    const eoadSokongan = new EoadSokonganAction(page);
-
 
     await login.goto();
-    await login.fillIdPengguna('890130019999');
+    await login.fillIdPengguna('habibullah');
     await login.fillKataLaluan('Password123@');
     await login.clickLogMasuk();
     await page.waitForLoadState('load');
@@ -71,7 +64,7 @@ test('E2E-02', async ({ page }) => {
     // ------------------------------------------------
     //        Carian Asnaf
     // ------------------------------------------------
-    
+    const carian = new CarianAsnafAction(page);
 
     await carian.openCarianAsnaf();
     await page.waitForLoadState('load');
@@ -80,14 +73,14 @@ test('E2E-02', async ({ page }) => {
     await carian.fillNama(data.name);
     await carian.clickCari();
     await carian.clickIsiBorangPermohonan();
-
+    await carian.clickDaftarTanpaValidasi();
 
     await page.waitForLoadState('load');
 
     // ------------------------------------------------
     //        Pendaftaran Lengkap (Aduan form)
     // ------------------------------------------------
-    
+    const aduan = new AduanAction(page);
 
     await aduan.fillNoTelefon(data.phone);
     await aduan.selectStatusPerkahwinan('Bujang');
@@ -186,24 +179,28 @@ test('E2E-02', async ({ page }) => {
     await aduan.clickBantuan();
     await aduan.clickMohonBantuanBaru();
 
-    await aduan.selectAid('BANTUAN KEPERLUAN HIDUP (FAKIR)');
-    await aduan.selectAidProduct('KATEGORI TEMPAT TINGGAL/RUMAH (FAKIR)');
-    await aduan.selectProductPackage('KATEGORI TEMPAT TINGGAL/RUMAH (FAKIR) - DEPOSIT SEWA RUMAH');
-    await aduan.setEntitlementProduct('KATEGORI TEMPAT TINGGAL/RUMAH (FAKIR) - DEPOSIT SEWA RUMAH');
+    await aduan.selectAid('(HQ) BANTUAN KEPERLUAN HIDUP (FAKIR)');
+    await aduan.selectAidProduct('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.selectProductPackage('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.setEntitlementProduct('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.setCashCounter(true);
     await aduan.fillPenyataanSebab('sda');
 
-    await aduan.clickEditEntitlement('KATEGORI TEMPAT TINGGAL/RUMAH (FAKIR) - DEPOSIT SEWA RUMAH');
-    await aduan.fillKadarBantuan('100.00');
-    await aduan.selectKategoriPenerima('Asnaf');
+    await aduan.clickEditEntitlement('(HQ) KATEGORI MAKAN/MINUM (FAKIR)');
+    await aduan.fillKadarBantuan('20.00');
     await aduan.clickSimpanBantuan();
 
     await aduan.uploadDokumenSokongan(0, TESTING_PDF, 'testing.pdf');
     await aduan.selectStatusDokumenSokongan(0, 'Lengkap');
+    await aduan.selectStatusDokumenSokongan(1, 'Tiada Keperluan');
     await aduan.fillCatatanDokumenSokongan(0, 'catatan');
 
     await aduan.fillNamaDokumenLzs(0, 'Dokumen LZS');
     await aduan.uploadDokumenLzs(0, TESTING_PDF);
     await aduan.fillCatatanDokumenLzs(0, 'catatan lzs');
+
+    await aduan.selectStatusSiasatan('Sokong');
+    await aduan.fillCatatanSiasatan('dsa');
 
     await aduan.expectStatusDokumenSokongan('LENGKAP');
     await aduan.clickSimpan();
@@ -226,47 +223,79 @@ test('E2E-02', async ({ page }) => {
     await aduan.selectHubunganPenolongAmil('T');
     await aduan.lukisTandatanganPengesahanAkhir();
     await aduan.expectTarikhPerakuan();
-    await aduan.fillCatatanSiasatan('Catatan siasatan');
+    await aduan.fillCatatanSokongan('Catatan sokongan');
     await aduan.clickHantar();
     await aduan.yaHantar();
     await aduan.clickOk();
-    await login.logout();
-
-    // ------------------------------------------------
-    //        EOAD - Sokongan
-    // ------------------------------------------------
-    await login.goto();
-    await login.fillIdPengguna('habibullah');
-    await login.fillKataLaluan('Password123@');
-    await login.clickLogMasuk();
-    await page.waitForLoadState('load');
-    await eoadSokongan.completeSupport(data.name);
-    await login.logout();
-
-    // ------------------------------------------------
-    //        KOAD LOGIN
-    // ------------------------------------------------
-    await login.goto();
-    await login.fillIdPengguna('m.sharil');
-    await login.fillKataLaluan('Password123@');
-    await login.clickLogMasuk();
-    await page.waitForLoadState('load');
-   
-    await kelulusan.goToKelulusan();
-    await kelulusan.cariByIc(data.ic);
-    await kelulusan.clickLihatKelulusan(data.ic);
-    await kelulusan.clickDetailTab('Bantuan');
-    await kelulusan.clickLihatTindakanBantuanByNama(data.name);
-    await kelulusan.selectStatusKelulusan('Lulus');
-    await kelulusan.fillCatatanBantuan('Permohonan diluluskan.');
-    await aduan.clickSimpan();
-    await kelulusan.openKeputusanKelulusan();
-    await kelulusan.selectKeputusan('Lulus');
-    await kelulusan.fillCatatanKelulusan('lulus');
-    await aduan.clickHantar();
-    await aduan.yaHantar();
+    await aduan.clickTeruskanChoice('Tidak');
     await page.waitForTimeout(3000);
-    await aduan.clickOk();
     await login.logout();
+
+    // // ------------------------------------------------
+    // //        KOAD LOGIN
+    // // ------------------------------------------------
+    // await login.goto();
+    // await login.fillIdPengguna('m.sharil');
+    // await login.fillKataLaluan('Password123@');
+    // await login.clickLogMasuk();
+    // await page.waitForLoadState('load');
+    // const kelulusan = new KelulusanAction(page);
+    // await kelulusan.goToKelulusan();
+    // await kelulusan.cariByIc(data.ic);
+    // await kelulusan.clickLihatKelulusan(data.ic);
+    // await kelulusan.clickDetailTab('Bantuan');
+    // await kelulusan.clickLihatTindakanBantuanByNama(data.name);
+    // await kelulusan.selectStatusKelulusan('Lulus');
+    // await page.waitForTimeout(3000);
+    // await kelulusan.fillCatatanBantuan('Permohonan diluluskan.');
+    // await aduan.clickSimpan();
+    // await page.waitForTimeout(3000);
+    // await kelulusan.openKeputusanKelulusan();
+    // await kelulusan.selectKeputusan('Lulus');
+    // await kelulusan.fillCatatanKelulusan('lulus');
+    // await aduan.clickHantar();
+    // await aduan.yaHantar();
+    // await page.waitForTimeout(3000);
+    // await aduan.clickOk();
+    // await login.logout();
+
+    // // ------------------------------------------------
+    // //        Kemaskini Profil Tanpa Kelulusan
+    // // ------------------------------------------------
+    // await login.goto();
+    // await login.fillIdPengguna('habibullah');
+    // await login.fillKataLaluan('Password123@');
+    // await login.clickLogMasuk();
+    // await page.waitForLoadState('load');
+
+    // const kemaskiniU = new KemaskiniUAction(page);
+    
+    // await carian.openCarianAsnaf();
+    // await page.waitForLoadState('load');
+    // await carian.selectJenisPengenalan('MyKad / MyKid');
+    // await carian.fillNoPengenalan(data.ic);
+    // await carian.fillNama(data.name);
+    // await carian.clickCari();
+
+    // await kemaskiniU.clickLihatProfil(data.ic);
+    // await kemaskiniU.clickKemaskini();
+    // await kemaskiniU.confirmKemaskini();
+
+    // await kemaskiniU.selectTahapDaftarKemaskini();
+    // await kemaskiniU.selectPendaftaranBaharuPerubahanMaklumat();
+    // await kemaskiniU.fillPernyataanMasalah('masalah');
+    // await kemaskiniU.uploadAduanLampiran(TESTING_PDF, 'testing.pdf');
+    // await aduan.clickSeterusnya();
+    // await page.waitForTimeout(3000);
+    // await kemaskiniU.fillTempatLahir(faker.lorem.words(2));
+    // await aduan.clickSimpan();
+    // await aduan.clickPengesahan();
+    // await aduan.clickStepPengesahanAkhir();
+    
+    // await kemaskiniU.selectTiadaTandatanganDigital();
+    // await kemaskiniU.fillCatatan('Kemaskini profil tanpa kelulusan.');
+    // await aduan.clickHantar();
+    // await aduan.yaHantar();
+    // await aduan.clickOk();
 
 });

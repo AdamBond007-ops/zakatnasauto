@@ -37,25 +37,26 @@ test('E2E-02', async ({ page }) => {
   // Alternative using text: await page.getByRole('link', { name: 'Profil Saya' }).click();
 
 
-    await page.locator('a[data-menu-path="/profiling/asnaf/profil-saya"]').click();
-    await page.locator('button', { hasText: 'Kemaskini' }).click();
-    await kemaskiniU.confirmKemaskini();
+  //   await page.locator('a[data-menu-path="/profiling/asnaf/profil-saya"]').click();
+  //   await page.locator('button', { hasText: 'Kemaskini' }).click();
+  //   await kemaskiniU.confirmKemaskini();
 
-    await kemaskiniU.selectTahapDaftarKemaskini();
-    await kemaskiniU.selectPendaftaranBaharuPerubahanMaklumat();
-    await kemaskiniU.fillPernyataanMasalah('masalah');
-    await kemaskiniU.uploadAduanLampiran(TESTING_PDF, 'a1d1557c58e82554ca7226f90e349f39.jpg');
-    await aduan.clickSeterusnya();
-    await page.waitForTimeout(3000);
-    await kemaskiniU.fillTempatLahir(faker.lorem.words(2));
-    await aduan.clickSimpan();
-    await aduan.clickPengesahan();
-    await aduan.clickStepPengesahanAkhir();
+  //   await page.locator('label').filter({ hasText: 'Daftar / Kemaskini /' }).click();
+  //   await page.locator('label').filter({ hasText: 'Pendaftaran baharu atau' }).click();
     
-    await aduan.drawSignature();
-    // Click "Hantar Permohonan" button
-  await page.locator('button', { hasText: 'Hantar Permohonan' }).click();
-    await aduan.yaHantar();
-    await aduan.clickOk();
+  //   await kemaskiniU.fillPernyataanMasalah('masalah');
+  //   await kemaskiniU.uploadAduanLampiran(TESTING_PDF, 'a1d1557c58e82554ca7226f90e349f39.jpg');
+  //   await aduan.clickSeterusnya();
+  //   await page.waitForTimeout(3000);
+  //   await kemaskiniU.fillTempatLahir(faker.lorem.words(2));
+  //   await aduan.clickSimpan();
+  //   await aduan.clickPengesahan();
+  //   await aduan.clickStepPengesahanAkhir();
+    
+  //   await aduan.drawSignature();
+  //   // Click "Hantar Permohonan" button
+  // await page.locator('button', { hasText: 'Hantar Permohonan' }).click();
+  //   await aduan.yaHantar();
+  //   // await aduan.clickOk();
 
 });

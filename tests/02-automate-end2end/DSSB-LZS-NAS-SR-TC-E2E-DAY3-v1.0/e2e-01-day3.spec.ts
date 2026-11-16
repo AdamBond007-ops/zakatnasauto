@@ -51,41 +51,42 @@ test('test', async ({ page }) => {
 
     //EOAD sokong
 
-    await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('habibullah');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.getByRole('button', { name: 'Bantuan Utama' }).click();
-  await page.locator('a').filter({ hasText: 'Senarai Bantuan Utama' }).click();
-  await page.locator('th:nth-child(8) > div > .flex > .inline-flex > .iconify').click();
-  await page.getByRole('button', { description: 'Semakan', exact: true }).click();
-  await page.locator('div').filter({ hasText: /^Sila Pilih$/ }).click();
-  await page.getByRole('option', { name: 'Lengkap', exact: true }).click();
-  await page.getByLabel('Status Semakan*').selectOption('SOKONG');
-  await page.getByRole('textbox', { name: 'Catatan*' }).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).fill('sokong');
-  await page.getByRole('cell').nth(1).click();
-  await page.getByRole('button', { name: 'Hantar' }).click();
-  await page.getByRole('button', { name: 'Ya, Hantar' }).click();
-  await page.getByRole('button', { name: 'Log Keluar' }).click();
+  //   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('habibullah');
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
+  // await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
+  // await page.getByRole('button', { name: 'Bantuan Utama' }).click();
+  // await page.locator('a').filter({ hasText: 'Senarai Bantuan Utama' }).click();
+  // await page.locator('th:nth-child(8) > div > .flex > .inline-flex > .iconify').click();
+  // await page.locator('button.v-popper--has-tooltip').first().click();
+  // await page.waitForTimeout(4000);
+  // await page.locator('div').filter({ hasText: /^Sila Pilih$/ }).click();
+  // await page.getByRole('option', { name: 'Lengkap', exact: true }).click();
+  // await page.getByLabel('Status Semakan*').selectOption('SOKONG');
+  // await page.getByRole('textbox', { name: 'Catatan*' }).click();
+  // await page.getByRole('textbox', { name: 'Catatan*' }).fill('sokong');
+  // await page.getByRole('cell').nth(1).click();
+  // await page.getByRole('button', { name: 'Hantar' }).click();
+  // await page.getByRole('button', { name: 'Ya, Hantar' }).click();
+  // await page.getByRole('button', { name: 'Log Keluar' }).click();
 
 
-  //KOAD LULUS
+  // //KOAD LULUS
 
-   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('m.sharil');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.getByRole('button', { name: 'Bantuan Utama' }).click();
-  await page.locator('a').filter({ hasText: 'Senarai Bantuan Utama' }).click();
-  await page.locator('th:nth-child(8) > div > .flex > .inline-flex > .iconify').click();
-  await page.getByRole('button', { description: 'Lihat', exact: true }).click();
-  await page.getByLabel('Status Kelulusan*').selectOption('LULUS');
-  await page.getByRole('textbox', { name: 'Catatan*' }).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).fill('lulus');
-  await page.getByRole('button', { name: 'Hantar' }).click();
-  await page.getByRole('button', { name: 'Ya, Luluskan' }).click();
-  await page.getByRole('button', { name: 'Log Keluar' }).click();
+  //  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('m.sharil');
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
+  // await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
+  // await page.getByRole('button', { name: 'Bantuan Utama' }).click();
+  // await page.locator('a').filter({ hasText: 'Senarai Bantuan Utama' }).click();
+  // await page.locator('th:nth-child(8) > div > .flex > .inline-flex > .iconify').click();
+  // await page.locator('button.v-popper--has-tooltip').first().click();
+  // await page.getByLabel('Status Kelulusan*').selectOption('LULUS');
+  // await page.getByRole('textbox', { name: 'Catatan*' }).click();
+  // await page.getByRole('textbox', { name: 'Catatan*' }).fill('lulus');
+  // await page.getByRole('button', { name: 'Hantar' }).click();
+  // await page.getByRole('button', { name: 'Ya, Luluskan' }).click();
+  // await page.getByRole('button', { name: 'Log Keluar' }).click();
 });

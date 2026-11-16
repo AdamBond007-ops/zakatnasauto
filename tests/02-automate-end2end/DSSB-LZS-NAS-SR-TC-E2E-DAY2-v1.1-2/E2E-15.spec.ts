@@ -10,9 +10,14 @@ async function selectSecurityQuestion(page: Page, questionName: string, value: s
   if (!optionLabel) {
     throw new Error(`Security question option "${value}" was not found.`);
   }
+
+  await container.locator('.select-trigger').click();
+  const listbox = page.getByRole('listbox').filter({ visible: true }).last();
+  await listbox.getByRole('option', { name: optionLabel, exact: true }).click();
+  await expect(select).toHaveValue(value);
 }
 
-test('Register account and verify via Gmail API', async ({ page }: { page: Page }) => {
+test('e2e-15', async ({ page }: { page: Page }) => {
   
 
   // 1. Details configuration
@@ -21,7 +26,7 @@ test('Register account and verify via Gmail API', async ({ page }: { page: Page 
     { length: 6 },
     () => letters[Math.floor(Math.random() * letters.length)]
   ).join('');
-  const fullName = `Shafiy Adam ${randomLetters}`;
+  const fullName = `ENDTEND TEST ${randomLetters}`;
   const email = `shafiyadam83+${randomLetters}@gmail.com`;
   const password = 'Password123@';
   

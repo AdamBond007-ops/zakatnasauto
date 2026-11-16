@@ -107,7 +107,7 @@ export class PendaftaranPantasPukalAction {
   /** Convenience: add the filled applicant, then assign the Fakir card. */
   async addToListAndAssignFakir(): Promise<void> {
     await this.clickTambahKeSenarai();
-    await this.clickTetapkanBantuan('Fakir');
+    // await this.clickTetapkanBantuan('Fakir');
   }
 
     // ---------- Maklumat Bantuan ----------

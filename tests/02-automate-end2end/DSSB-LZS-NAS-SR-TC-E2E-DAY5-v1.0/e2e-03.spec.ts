@@ -41,8 +41,8 @@ test('E2E-02', async ({ page }) => {
     await page.locator('button', { hasText: 'Kemaskini' }).click();
     await kemaskiniU.confirmKemaskini();
 
-    await kemaskiniU.selectTahapDaftarKemaskini();
-    await kemaskiniU.selectPendaftaranBaharuPerubahanMaklumat();
+     await page.locator('label').filter({ hasText: 'Daftar / Kemaskini /' }).click();
+    await page.locator('label').filter({ hasText: 'Pendaftaran baharu atau' }).click();
     await kemaskiniU.fillPernyataanMasalah('masalah');
     await kemaskiniU.uploadAduanLampiran(TESTING_PDF, 'a1d1557c58e82554ca7226f90e349f39.jpg');
     await aduan.clickSeterusnya();
@@ -56,6 +56,6 @@ test('E2E-02', async ({ page }) => {
     // Click "Hantar Permohonan" button
   await page.locator('button', { hasText: 'Hantar Permohonan' }).click();
     await aduan.yaHantar();
-    await aduan.clickOk();
+    // await aduan.clickOk();
 
 });

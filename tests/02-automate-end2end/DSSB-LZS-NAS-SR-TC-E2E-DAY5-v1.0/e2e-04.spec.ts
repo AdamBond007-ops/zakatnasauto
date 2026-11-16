@@ -31,7 +31,7 @@ await action.fillMaklumatBantuanAndTarikh(
   '002 - (HQ) KATEGORI MAKAN/MINUM (FAKIR)',
   '20200000027 - (HQ) KATEGORI MAKAN/MINUM (FAKIR)',
   '(HQ) KATEGORI MAKAN/MINUM (FAKIR)',
-  '2026-11-12'
+  '2026-11-16'
 );
 await action.clickEdit();
 await action.uploadExcelFile(path.join(__dirname, 'Template_Bantuan_Pukal.xlsx'));

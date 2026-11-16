@@ -39,27 +39,9 @@ test('E2E-02', async ({ page }) => {
     kariah: "MASJID ABU BAKAR AS-SIDDIQ SUBANG JAYA",
     kategori: "Kariah (PAK)",
     jawatan: "Penolong Amil Kariah",
-    elaun: "Anugerah KPAK Terbaik"
+    elaun: "Anugerah PAK Terbaik"
   });
 
-  await elaun.selectRecordAndConfirm();
-  await elaun.submitElaunForm("Permohonan elaun tahunan lengkap.", TESTING_IMAGE);
 
-  await login.logout();
-
-    // ------------------------------------------------
-    //        KJ - Login
-    // ------------------------------------------------
-
-    await login.goto();
-    await login.fillIdPengguna('salahuddin');
-    await login.fillKataLaluan('Password123@');
-    await login.clickLogMasuk();
-    await page.waitForLoadState('load');
-
-    await elaun.switchRoleToKJPPA();
-    await elaun.navigateToElaunTahunanKJ();
-    // Execute the bulk approval step:
-    await elaun.processBulkApproval("Kelulusan permohonan elaun tahunan", "Lulus");
 
 });

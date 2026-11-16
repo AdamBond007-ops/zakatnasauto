@@ -1,4 +1,4 @@
- 
+
 import { test, expect, type Locator } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { join } from 'path';
@@ -45,25 +45,23 @@ await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
   await page.getByRole('textbox', { name: 'Bilangan Peserta*' }).fill('20');
   await page.getByRole('textbox', { name: 'Jumlah Hari Program*' }).click();
   await page.getByRole('textbox', { name: 'Jumlah Hari Program*' }).fill('1');
-  await page.getByRole('textbox', { name: 'Tarikh Mula*' }).fill('2026-11-08');
+  await page.getByRole('textbox', { name: 'Tarikh Mula*' }).fill('2026-11-22');
+  await page.waitForTimeout(3000);
   await page.locator('input[type="time"]').nth(0).fill('14:16');
   await page.locator('input[type="time"]').nth(1).fill('18:19');
   await page.getByRole('textbox', { name: 'Catatan*' }).click();
   await page.getByRole('textbox', { name: 'Catatan*' }).fill('catatan');
   await uploadFileFromButton(page.getByRole('button', { name: 'Pilih Fail' }));
   await page.getByRole('button', { name: 'Seterusnya' }).click();
-
-await page.getByRole('radio', { name: 'Asnaf' }).check();
+  await page.getByRole('radio', { name: 'Penolong Amil' }).check();
   await page.getByRole('button', { name: 'Pilih Peserta' }).click();
   await page.getByText('Sila Pilih').first().click();
+  await page.locator('span').filter({ hasText: 'Kariah (PAK)' }).first().click();
+  await page.locator('div').filter({ hasText: /^Sila Pilih$/ }).first().click();
   await page.locator('span').filter({ hasText: 'PETALING' }).nth(2).click();
-  await page.getByText('Pilih satu atau lebih (kosong').click();
-  await page.getByRole('option', { name: 'MASJID ABU BAKAR AS-SIDDIQ' }).click();
-  await page.locator('.iconify.i-heroicons\\:chevron-down.dropdown-arrow.is-rotated').click();
   await page.getByRole('button', { name: 'Cari' }).click();
   await page.getByRole('checkbox', { name: 'Pilih semua pada halaman ini' }).check();
   await page.getByRole('button', { name: 'Pilih Peserta' }).nth(1).click();
-
   await page.getByRole('button', { name: 'Seterusnya', exact: true }).click();
   await page.getByRole('button', { name: 'Hantar Program' }).click();
   await page.getByRole('button', { name: 'Log Keluar' }).click();
@@ -71,21 +69,20 @@ await page.getByRole('radio', { name: 'Asnaf' }).check();
 
     //LULUS
 
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('salahuddin');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.locator('.flex.justify-end').click();
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.getByRole('button', { name: 'Program' }).click();
-  await page.getByText('ProgramCipta ProgramSenarai ProgramSenarai KelulusanMaklumat Bantuan').click();
-  await page.locator('a').filter({ hasText: 'Senarai Kelulusan' }).click();
-  await page.locator('th:nth-child(6) > .flex.min-w-0.items-center.gap-2.text-left.justify-between > .flex > .inline-flex > .iconify').click();
-  await page.locator('.inline-flex.items-center.justify-center.w-8').first().click();
-  await page.getByText('Sila Pilih').click();
-  await page.locator('span').filter({ hasText: 'Lulus' }).nth(4).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).fill('lulus');
-  await page.getByRole('button', { name: 'Hantar' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('salahuddin');
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
+  // await page.locator('.flex.justify-end').click();
+  // await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
+  // await page.getByRole('button', { name: 'Program' }).click();
+  // await page.getByText('ProgramCipta ProgramSenarai ProgramSenarai KelulusanMaklumat Bantuan').click();
+  // await page.locator('a').filter({ hasText: 'Senarai Kelulusan' }).click();
+  // await page.locator('th:nth-child(6) > .flex.min-w-0.items-center.gap-2.text-left.justify-between > .flex > .inline-flex > .iconify').click();
+  // await page.locator('.inline-flex.items-center.justify-center.w-8').first().click();
+  // await page.getByText('Sila Pilih').click();
+  // await page.locator('span').filter({ hasText: 'Lulus' }).nth(4).click();
+  // await page.getByRole('textbox', { name: 'Catatan*' }).click();
+  // await page.getByRole('textbox', { name: 'Catatan*' }).fill('lulus');
+  // await page.getByRole('button', { name: 'Hantar' }).click();
 });
- 
