@@ -12,7 +12,7 @@ import { KemaskiniUAction } from '@library/2-object/Kemaskini U/action';
 const TESTING_PDF = path.resolve(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg');
 
 
-test('E2E-02', async ({ page }) => {
+test('e2e-02', async ({ page }) => {
     test.setTimeout(TIMEOUTS.TEN_MINUTES)
 
     const login = new LoginAction(page);

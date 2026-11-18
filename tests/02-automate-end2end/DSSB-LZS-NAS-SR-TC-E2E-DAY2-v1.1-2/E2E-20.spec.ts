@@ -42,6 +42,10 @@ function generateEmail(): string {
   return `shafiyadam83+${randomWord}${randomNumber}@gmail.com`;
 }
 
+function generateWordOnlyName(): string {
+  return faker.person.fullName().replace(/[^a-zA-Z]+/g, " ").trim();
+}
+
 function createContactDetails(namaPenuh: string): AduanContactDetails & { emel: string } {
   return {
     namaPenuh,
@@ -54,9 +58,9 @@ function createContactDetails(namaPenuh: string): AduanContactDetails & { emel: 
 
 test("E2E-20 - Daftar aduan sebagai wakil", async ({ page }) => {
   const aduan = new AduanAction(page);
-  const pengadu = createContactDetails(faker.person.fullName());
+  const pengadu = createContactDetails(generateWordOnlyName());
   const individu: AduanIndividuDetails = {
-    ...createContactDetails(faker.person.fullName()),
+    ...createContactDetails(generateWordOnlyName()),
     statusPerkahwinan: "Bujang",
     alamat1: "12",
     alamat2: "Jalan Anggerik 3",

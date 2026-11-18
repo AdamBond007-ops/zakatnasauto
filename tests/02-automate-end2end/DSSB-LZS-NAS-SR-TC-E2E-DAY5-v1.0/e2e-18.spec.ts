@@ -101,7 +101,7 @@ async function isiLaporanSiasatan(page: Page, laporan: string): Promise<void> {
 
 const TESTING_PDF = path.join(__dirname, '../../library/1-data/files/testing.pdf');
 
-test('test', async ({ page }) => {
+test('e2e-18', async ({ page }) => {
   const aduan = new AduanAction(page);
   const applicantIc = generateMalaysianIc();
   const applicantName = generateApplicantName();

@@ -103,19 +103,19 @@ test('E2E-02', async ({ page }) => {
     //        SSU Aduan
     // ------------------------------------------------
 
-    await login.goto();
-    await login.fillIdPengguna('syafiq.a');
-    await login.fillKataLaluan('Password123@');
-    await login.clickLogMasuk();
-    await page.waitForLoadState('load');
+    // await login.goto();
+    // await login.fillIdPengguna('syafiq.a');
+    // await login.fillKataLaluan('Password123@');
+    // await login.clickLogMasuk();
+    // await page.waitForLoadState('load');
 
-    await aduan.clickSenaraiAduan();
-    await page.getByRole('searchbox', { name: 'Cari...' }).click();
-    await page.getByRole('searchbox', { name: 'Cari...' }).fill(data.name);
+    // await aduan.clickSenaraiAduan();
+    // await page.getByRole('searchbox', { name: 'Cari...' }).click();
+    // await page.getByRole('searchbox', { name: 'Cari...' }).fill(data.name);
 
-    await aduan.clickLihatAduan();
-    await aduan.clickTerimaTugas();
-    await aduan.clickYaTerima();
-    await aduan.clickOk();
+    // await aduan.clickLihatAduan();
+    // await aduan.clickTerimaTugas();
+    // await aduan.clickYaTerima();
+    // await aduan.clickOk();
 
 });

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('test', async ({ page }) => {
+test('e2e-15', async ({ page }) => {
   await page.goto('https://stg.nas-internal.com/login');
   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
   await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('zakatselm.nazri');

@@ -26,7 +26,7 @@ function generateEmail(): string {
   return `shafiyadam83+${faker.string.numeric(7)}@gmail.com`;
 }
 
-test('test', async ({ page }) => {
+test('e2e-08', async ({ page }) => {
 await page.goto('https://stg.nas-internal.com/login');
 //EKP
   //ekp daftar baru

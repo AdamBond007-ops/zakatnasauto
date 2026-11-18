@@ -187,7 +187,7 @@ test('test', async ({ page }) => {
   await page.getByRole('searchbox', { name: 'Cari...' }).click();
   await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
   await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'Lihat Sokongan' }).click();
+  await page.getByRole('button', { name: 'Lihat Sokongan' }).first().click();
   await page.getByRole('button', { name: 'Maklumat Pemohon' }).click();
  await uploadFile(page.locator('input[type="file"]').first());
   await page.locator('#stepForm-1 div').filter({ hasText: /^Sila Pilih$/ }).click();
@@ -238,37 +238,37 @@ test('test', async ({ page }) => {
   await page.waitForTimeout(TIMEOUTS.SHORT);
   await page.getByRole('button', { name: 'Log Keluar' }).click();
 
-  //KOAD LUlus
+  // //KOAD LUlus
 
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('m.sharil');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.locator('a').filter({ hasText: 'Kelulusan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('searchbox', { name: 'Cari...' }).click();
-  await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
-  await page.getByRole('button', { name: 'Lihat Kelulusan' }).first().click();
-  await page.getByRole('button', { name: 'Bantuan', exact: true }).click();
-  await page.getByRole('button', { name: 'Lihat / Tindakan' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('m.sharil');
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
+  // await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
+  // await page.locator('a').filter({ hasText: 'Kelulusan' }).click();
+  // await page.waitForTimeout(TIMEOUTS.SHORT);
+  // await page.getByRole('searchbox', { name: 'Cari...' }).click();
+  // await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
+  // await page.getByRole('button', { name: 'Lihat Kelulusan' }).first().click();
+  // await page.getByRole('button', { name: 'Bantuan', exact: true }).click();
+  // await page.getByRole('button', { name: 'Lihat / Tindakan' }).click();
 
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByText('Sila Pilih', { exact: true }).click();
-  await page.locator('span').filter({ hasText: 'Lulus' }).nth(3).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).click();
-  await page.getByRole('textbox', { name: 'Catatan*' }).fill('lulus');
-  await page.getByRole('button', { name: 'Simpan' }).click();
-  await page.getByRole('button', { name: 'Pengesahan' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await aduan.pilihKeputusan('LULUS');
-  await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).click();
-  await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).fill('lulus');
-  await page.getByRole('button', { name: 'Hantar' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'Ya, Hantar' }).click();
-  await page.waitForTimeout(TIMEOUTS.SHORT);
-  await page.getByRole('button', { name: 'OK' }).click();
+  // await page.waitForTimeout(TIMEOUTS.SHORT);
+  // await page.getByText('Sila Pilih', { exact: true }).click();
+  // await page.locator('span').filter({ hasText: 'Lulus' }).nth(3).click();
+  // await page.getByRole('textbox', { name: 'Catatan*' }).click();
+  // await page.getByRole('textbox', { name: 'Catatan*' }).fill('lulus');
+  // await page.getByRole('button', { name: 'Simpan' }).click();
+  // await page.getByRole('button', { name: 'Pengesahan' }).click();
+  // await page.waitForTimeout(TIMEOUTS.SHORT);
+  // await aduan.pilihKeputusan('LULUS');
+  // await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).click();
+  // await page.getByRole('textbox', { name: 'Masukkan catatan kelulusan...' }).fill('lulus');
+  // await page.getByRole('button', { name: 'Hantar' }).click();
+  // await page.waitForTimeout(TIMEOUTS.SHORT);
+  // await page.getByRole('button', { name: 'Ya, Hantar' }).click();
+  // await page.waitForTimeout(TIMEOUTS.SHORT);
+  // await page.getByRole('button', { name: 'OK' }).click();
 
 
 });

@@ -4,7 +4,7 @@ import { PendaftaranPantasPukalAction } from '@library/2-object/Pendaftaran Puka
 import { LoginAction } from '@library/2-object/Login/action';
 import { AduanAction } from '@library/2-object/Pendaftaran Lengkap/action';
 
-test('test', async ({ page }) => {
+test('e2e-04', async ({ page }) => {
   await page.goto('https://stg.nas-internal.com/login');
 
 //---------------
@@ -31,7 +31,7 @@ await action.fillMaklumatBantuanAndTarikh(
   '002 - (HQ) KATEGORI MAKAN/MINUM (FAKIR)',
   '20200000027 - (HQ) KATEGORI MAKAN/MINUM (FAKIR)',
   '(HQ) KATEGORI MAKAN/MINUM (FAKIR)',
-  '2026-11-16'
+  '2026-11-17'
 );
 await action.clickEdit();
 await action.uploadExcelFile(path.join(__dirname, 'Template_Bantuan_Pukal.xlsx'));

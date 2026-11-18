@@ -13,7 +13,7 @@ async function uploadFileFromButton(button: Locator): Promise<void> {
   await fileChooser.setFiles(join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg'));
 }
 
-test('test', async ({ page }) => {
+test('e2e-04', async ({ page }) => {
 
    await page.goto('https://stg.nas-internal.com/login'); 
   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();

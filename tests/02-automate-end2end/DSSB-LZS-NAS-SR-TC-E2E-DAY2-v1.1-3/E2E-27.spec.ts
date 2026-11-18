@@ -44,15 +44,7 @@ const data = {
     address: 'F-3-4',
 };
 
-const tanggunganData = {
-    name: `A ${faker.person.firstName().toUpperCase()}`,
-    ic: generateIC(),
-    email: `shafiyadam83+${faker.word.sample()}${faker.number.int({ min: 100, max: 999 })}@gmail.com`,
-    phone: `01${faker.string.numeric(8)}`,
-};
-
 const TESTING_PDF = path.join(__dirname, '../../library/1-data/files/testing.pdf');
-const SURAT_TAWARAN_IMAGE = path.join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg');
 
 
 test('E2E-02', async ({ page }) => {
@@ -114,7 +106,7 @@ test('E2E-02', async ({ page }) => {
     await aduan.selectMuflis('T');
     await aduan.selectAdaAkaunBank('T');
     /*await aduan.selectNamaBank('MALAYAN BANKING BERHAD');
-    await aduan.fillNoAkaunBank(faker.string.numeric(17));
+    await aduan.fillNoAkaunBank('11111111111111111');
     await aduan.uploadPenyataBank(TESTING_PDF, 'testing.pdf');*/
     await aduan.selectTahapKesihatan('Sihat');
     await aduan.clickSeterusnya();
@@ -145,10 +137,9 @@ test('E2E-02', async ({ page }) => {
     // ------------------------------------------------
     //        Tanggungan
     // ------------------------------------------------
-    await aduan.fillNamaTanggungan(tanggunganData.name);
+    await aduan.fillNamaTanggungan(`A ${faker.person.firstName().toUpperCase()}`);
     await aduan.selectJenisPengenalanTanggungan('MyKad / MyKid');
-    await aduan.fillNoPengenalanTanggungan(tanggunganData.ic); 
-   
+    await aduan.fillNoPengenalanTanggungan(generateIC());
     await aduan.selectHubunganTanggungan('Anak Lelaki');
     await aduan.selectJantinaTanggungan('Lelaki');
     await aduan.selectBangsaTanggungan('Melayu');
@@ -158,34 +149,18 @@ test('E2E-02', async ({ page }) => {
     await page.waitForTimeout(1000);
 
     await aduan.uploadTanggunganDokumenId(TESTING_PDF, 'testing.pdf');
-    await aduan.fillNoTelefonTanggungan(tanggunganData.phone);
-    await aduan.fillEmelTanggungan(tanggunganData.email);
-
     await aduan.selectTanggunganTempohUnit('Bulan');
     await aduan.fillTanggunganTempohMenetap('5');
     await aduan.selectTanggunganStatusPerkahwinan('Bujang');
     await aduan.selectTanggunganMuallaf('T');
     await aduan.selectTanggunganMuflis('T');
-    await aduan.selectAdaAkaunBank('Y');
-    await aduan.selectNamaBankTanggungan('AFFIN BANK BERHAD');
-    await aduan.fillNoAkaunBankTanggungan(faker.string.numeric(17));
-    await aduan.uploadPenyataBankTanggungan(TESTING_PDF, 'testing.pdf');
     await aduan.selectTanggunganTahapKesihatan('Sihat');
 
     await aduan.clickSeterusnya();
 
-    await aduan.selectTanggunganMasihBersekolah('01');
-    await aduan.selectTanggunganPendidikanTertinggi('SPM');
-    await aduan.selectTahapPendidikanDiploma();
-    await aduan.selectKategoriSekolahIPTA();
-    await aduan.fillStudyDates();
-    await aduan.selectTahunPengajian();
-    await aduan.selectNamaSekolahUTM();
-    await aduan.uploadSuratTawaran(SURAT_TAWARAN_IMAGE);
-    await aduan.selectPembiayaanTiada();
-    
-    await aduan.selectTinggalAsramaTidak();
-    await aduan.selectAdaKemahiranTidak();
+    await aduan.selectTanggunganMasihBersekolah('02');
+    await aduan.selectTanggunganPendidikanTertinggi('Diploma');
+
     await aduan.clickSeterusnya();
 
     await aduan.selectTanggunganAdaPinjaman('T');
@@ -256,9 +231,9 @@ test('E2E-02', async ({ page }) => {
     await page.waitForTimeout(3000);
     await login.logout();
 
-    // ------------------------------------------------
-    //        KOAD LOGIN
-    // ------------------------------------------------
+    // // ------------------------------------------------
+    // //        KOAD LOGIN
+    // // ------------------------------------------------
     // await login.goto();
     // await login.fillIdPengguna('m.sharil');
     // await login.fillKataLaluan('Password123@');

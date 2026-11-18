@@ -6,7 +6,7 @@ import { AduanAction } from '@library/2-object/Pendaftaran Lengkap/action';
 
 
 
-test('test', async ({ page }) => {
+test('e2e-01', async ({ page }) => {
   await page.goto('https://stg.nas-internal.com/login');
 
 //---------------

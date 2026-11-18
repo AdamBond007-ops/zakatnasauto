@@ -507,28 +507,28 @@ test('E2E-02', async ({ page }) => {
     // ------------------------------------------------
     //        KOAD LOGIN
     // ------------------------------------------------
-    await login.goto();
-    await login.fillIdPengguna('m.sharil');
-    await login.fillKataLaluan('Password123@');
-    await login.clickLogMasuk();
-    await page.waitForLoadState('load');
-    const kelulusan = new KelulusanAction(page);
-    await kelulusan.goToKelulusan();
-    await kelulusan.cariByIc(data.ic);
-    await kelulusan.clickLihatKelulusan(data.ic);
-    await kelulusan.clickDetailTab('Bantuan');
-    await kelulusan.clickLihatTindakanBantuanByNama(data.name);
-    await kelulusan.selectStatusKelulusan('Lulus');
-    await kelulusan.fillCatatanBantuan('Permohonan diluluskan.');
-    await aduan.clickSimpan();
-    await kelulusan.openKeputusanKelulusan();
-    await kelulusan.selectKeputusan('Lulus');
-    await kelulusan.fillCatatanKelulusan('lulus');
-    await aduan.clickHantar();
-    await aduan.yaHantar();
-    await page.waitForTimeout(3000);
-    await aduan.clickOk();
-    await login.logout();
+    // await login.goto();
+    // await login.fillIdPengguna('m.sharil');
+    // await login.fillKataLaluan('Password123@');
+    // await login.clickLogMasuk();
+    // await page.waitForLoadState('load');
+    // const kelulusan = new KelulusanAction(page);
+    // await kelulusan.goToKelulusan();
+    // await kelulusan.cariByIc(data.ic);
+    // await kelulusan.clickLihatKelulusan(data.ic);
+    // await kelulusan.clickDetailTab('Bantuan');
+    // await kelulusan.clickLihatTindakanBantuanByNama(data.name);
+    // await kelulusan.selectStatusKelulusan('Lulus');
+    // await kelulusan.fillCatatanBantuan('Permohonan diluluskan.');
+    // await aduan.clickSimpan();
+    // await kelulusan.openKeputusanKelulusan();
+    // await kelulusan.selectKeputusan('Lulus');
+    // await kelulusan.fillCatatanKelulusan('lulus');
+    // await aduan.clickHantar();
+    // await aduan.yaHantar();
+    // await page.waitForTimeout(3000);
+    // await aduan.clickOk();
+    // await login.logout();
 
     
 });

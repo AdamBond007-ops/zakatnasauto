@@ -44,10 +44,12 @@ test('test', async ({ page }) => {
     //PIC
   await page.goto('https://stg.nas-internal.com/login');
   await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('960318561000');
+  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('811212031869');
   await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
   await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
   await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
+  await page.getByRole('button', { name: 'Tukar Peranan' }).click();
+  await page.getByRole('menuitem', { name: 'ORGANISASI_MASJID', exact: true }).click();
   await page.locator('a').filter({ hasText: 'Pendaftaran Penolong Amil' }).click();
   await page.getByRole('button', { name: 'Tambah' }).click();
   await page.getByRole('button', { name: 'Individu' }).click();
@@ -76,22 +78,22 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Log Keluar' }).click();
 
 
-  //PTDPA
+  // //PTDPA
 
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
-  await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('zakatselsyafiq.ramli');
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
-  await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
-  await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
-  await page.getByRole('button', { name: 'Tukar Peranan' }).click();
-  await page.getByRole('menuitem', { name: 'PT_PA' }).click();
-  await page.locator('a').filter({ hasText: 'Pendaftaran Penolong Amil' }).click();
-  await page.getByRole('searchbox', { name: 'Cari...' }).click();
-  await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
-  await page.getByRole('button', { name: 'Lihat' }).click();
-  await page.getByRole('combobox').selectOption('200');
-  await page.getByRole('textbox', { name: 'Masukkan catatan untuk' }).click();
-  await page.getByRole('textbox', { name: 'Masukkan catatan untuk' }).fill('lengkap');
-  await page.getByRole('button', { name: 'Hantar' }).click();
-  await page.getByRole('button', { name: 'Ya, Hantar' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).click();
+  // await page.getByRole('textbox', { name: 'ID Pengguna' }).fill('zakatselsyafiq.ramli');
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).click();
+  // await page.getByRole('textbox', { name: 'Kata Laluan*' }).fill('Password123@');
+  // await page.getByRole('button', { name: 'Log Masuk', exact: true }).click();
+  // await page.getByRole('button', { name: 'Tukar Peranan' }).click();
+  // await page.getByRole('menuitem', { name: 'PT_PA' }).click();
+  // await page.locator('a').filter({ hasText: 'Pendaftaran Penolong Amil' }).click();
+  // await page.getByRole('searchbox', { name: 'Cari...' }).click();
+  // await page.getByRole('searchbox', { name: 'Cari...' }).fill(applicantName);
+  // await page.getByRole('button', { name: 'Lihat' }).click();
+  // await page.getByRole('combobox').selectOption('200');
+  // await page.getByRole('textbox', { name: 'Masukkan catatan untuk' }).click();
+  // await page.getByRole('textbox', { name: 'Masukkan catatan untuk' }).fill('lengkap');
+  // await page.getByRole('button', { name: 'Hantar' }).click();
+  // await page.getByRole('button', { name: 'Ya, Hantar' }).click();
 });

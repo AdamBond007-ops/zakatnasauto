@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('test', async ({ page }) => {
+test('e2e-02', async ({ page }) => {
 
     //EKP kemaskini organisasi
   await page.goto('https://stg.nas-internal.com/login');

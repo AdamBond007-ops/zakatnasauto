@@ -52,11 +52,15 @@ function createContactDetails(namaPenuh: string): AduanContactDetails & { emel: 
   };
 }
 
+function generateWordOnlyName(): string {
+  return faker.person.fullName().replace(/[^a-zA-Z]+/g, " ").trim();
+}
+
 test("E2E-20 - Daftar aduan sebagai wakil", async ({ page }) => {
   const aduan = new AduanAction(page);
-  const pengadu = createContactDetails(faker.person.fullName());
+  const pengadu = createContactDetails(generateWordOnlyName());
   const individu: AduanIndividuDetails = {
-    ...createContactDetails(faker.person.fullName()),
+    ...createContactDetails(generateWordOnlyName()),
     statusPerkahwinan: "Bujang",
     alamat1: "12",
     alamat2: "Jalan Anggerik 3",

@@ -44,7 +44,7 @@ module.exports = { fillCatatan };
 
 module.exports = { clickRekodPenerimaan };
 
-test('test', async ({ page }) => {
+test('e2e-10', async ({ page }) => {
   await page.goto('https://stg.nas-internal.com/login');
   
 //------------------

@@ -4,7 +4,7 @@ async function clickKewangan(page: Page) {
   await page.locator('button[role="menuitem"]', { hasText: 'KEWANGAN' }).click();
 }
 
-test('test', async ({ page }) => {
+test('e2e-11', async ({ page }) => {
   await page.goto('https://stg.nas-internal.com/login');
   
 //------------------

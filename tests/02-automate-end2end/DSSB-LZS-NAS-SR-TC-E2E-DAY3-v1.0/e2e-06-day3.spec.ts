@@ -15,7 +15,7 @@ const TESTING_PDF = path.join(__dirname, '../../library/1-data/files/testing.pdf
 const TESTING_IMAGE = path.join(__dirname, 'a1d1557c58e82554ca7226f90e349f39.jpg');
 
 
-test('E2E-02', async ({ page }) => {
+test('e2e-06', async ({ page }) => {
     test.setTimeout(TIMEOUTS.TEN_MINUTES)
 
     // ------------------------------------------------
